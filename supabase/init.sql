@@ -81,6 +81,47 @@ CREATE TABLE IF NOT EXISTS public.services (
   created_by TEXT
 );
 
+-- Add missing columns if they don't exist
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'services' AND column_name = 'slug') THEN
+    ALTER TABLE public.services ADD COLUMN slug TEXT;
+    ALTER TABLE public.services ADD CONSTRAINT services_slug_key UNIQUE (slug);
+  END IF;
+
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'services' AND column_name = 'short_description') THEN
+    ALTER TABLE public.services ADD COLUMN short_description TEXT;
+  END IF;
+
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'services' AND column_name = 'full_description') THEN
+    ALTER TABLE public.services ADD COLUMN full_description TEXT;
+  END IF;
+
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'services' AND column_name = 'benefits') THEN
+    ALTER TABLE public.services ADD COLUMN benefits TEXT;
+  END IF;
+
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'services' AND column_name = 'process') THEN
+    ALTER TABLE public.services ADD COLUMN process TEXT;
+  END IF;
+
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'services' AND column_name = 'icon_url') THEN
+    ALTER TABLE public.services ADD COLUMN icon_url TEXT;
+  END IF;
+
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'services' AND column_name = 'image_url') THEN
+    ALTER TABLE public.services ADD COLUMN image_url TEXT;
+  END IF;
+
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'services' AND column_name = 'order') THEN
+    ALTER TABLE public.services ADD COLUMN "order" INTEGER DEFAULT 0;
+  END IF;
+
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'services' AND column_name = 'created_by') THEN
+    ALTER TABLE public.services ADD COLUMN created_by TEXT;
+  END IF;
+END $$;
+
 ALTER TABLE public.services ENABLE ROW LEVEL SECURITY;
 
 -- Policies for services table
