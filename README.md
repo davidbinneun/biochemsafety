@@ -1,105 +1,29 @@
-# Biochemical Safety - Base44 App
+# Biochemical Safety
 
-A modern web application for biochemical safety services built with React, Vite, Base44, and deployed on Vercel.
+A modern web application for biochemical safety services built with React, Vite, Supabase, and deployed on Vercel.
 
 ## 🚀 Deployment Setup
 
-This repository is configured for automated deployment through GitHub → Vercel, with Base44 as the primary backend and optional Supabase integration.
+This repository is configured for automated deployment through GitHub → Vercel with Supabase as the backend database.
 
 ### Prerequisites
 
 1. **GitHub Account** - Repository: `davidbinneun/biochemsafety`
 2. **Vercel Account** - For hosting and deployment
-3. **Base44 Account** - Get your app credentials from [Base44 Dashboard](https://base44.com)
-4. **Supabase Account** (Optional) - For additional backend features
+3. **Supabase Account** - For backend database and authentication
 
 ## 📋 Step-by-Step Deployment Guide
 
-### 1. Push Code to GitHub
+### 1. Set Up Supabase
 
-```bash
-# Initialize git (if not already done)
-git init
-
-# Add all files
-git add .
-
-# Commit
-git commit -m "Initial commit - Setup for deployment"
-
-# Add remote and push
-git remote add origin https://github.com/davidbinneun/biochemsafety.git
-git branch -M main
-git push -u origin main
-```
-
-### 2. Configure Base44
-
-1. Log in to your [Base44 Dashboard](https://base44.com)
-2. Create a new app or use an existing one
-3. Note down:
-   - `App ID`
-   - `Backend URL` (usually `https://api.base44.com`)
-   - `Functions Version` (usually `v1`)
-
-### 3. Set Up Vercel
-
-#### Option A: Using Vercel Dashboard (Recommended for first-time setup)
-
-1. Go to [Vercel Dashboard](https://vercel.com/dashboard)
-2. Click "Add New Project"
-3. Import the `davidbinneun/biochemsafety` repository
-4. Configure the project:
-   - **Framework Preset**: Vite
-   - **Build Command**: `npm run build`
-   - **Output Directory**: `dist`
-5. Add environment variables:
-   - `VITE_BASE44_APP_ID` - Your Base44 App ID
-   - `VITE_BASE44_BACKEND_URL` - Your Base44 backend URL
-   - `VITE_BASE44_FUNCTIONS_VERSION` - Your Base44 functions version
-6. Click "Deploy"
-
-#### Option B: Using Vercel CLI
-
-```bash
-# Install Vercel CLI
-npm install -g vercel
-
-# Login to Vercel
-vercel login
-
-# Deploy
-vercel --prod
-```
-
-### 4. Configure GitHub Actions (For Automatic Deployments)
-
-1. Go to your GitHub repository settings
-2. Navigate to **Settings** → **Secrets and variables** → **Actions**
-3. Add the following secrets:
-
-   **Required Secrets:**
-   - `VERCEL_TOKEN` - Get from [Vercel Account Tokens](https://vercel.com/account/tokens)
-   - `VERCEL_PROJECT_ID` - Find in Vercel project settings
-   - `VERCEL_ORG_ID` - Find in Vercel project settings
-   - `VITE_BASE44_APP_ID` - Your Base44 App ID
-   - `VITE_BASE44_BACKEND_URL` - Your Base44 backend URL
-   - `VITE_BASE44_FUNCTIONS_VERSION` - Your Base44 functions version
-
-4. Push to `main` branch to trigger automatic deployment
-
-### 5. Configure Supabase (Optional)
-
-If you want to use Supabase for additional backend features:
-
-1. Create a new project on [Supabase](https://supabase.com)
+1. Create a new project at [Supabase](https://supabase.com)
 2. Go to **Project Settings** → **API**
 3. Note down:
-   - `Project URL`
-   - `anon/public key`
-   - `service_role key` (keep this secret!)
+   - **Project URL** (`VITE_SUPABASE_URL`)
+   - **anon/public key** (`VITE_SUPABASE_ANON_KEY`)
+   - **service_role key** (keep this secret!)
 
-4. Run the initialization SQL:
+4. Initialize the database schema:
 
 ```bash
 # Install Supabase CLI if not installed
@@ -115,9 +39,51 @@ supabase link --project-ref your-project-ref
 supabase db push --file supabase/init.sql
 ```
 
-5. Add Supabase environment variables to Vercel:
-   - `VITE_SUPABASE_URL`
-   - `VITE_SUPABASE_ANON_KEY`
+Alternatively, you can copy the contents of `supabase/init.sql` and run it in the Supabase SQL Editor.
+
+### 2. Set Up Vercel
+
+#### Option A: Via Vercel Dashboard (Recommended)
+
+1. Go to [Vercel Dashboard](https://vercel.com/dashboard)
+2. Click "Add New Project"
+3. Import the `davidbinneun/biochemsafety` repository
+4. Configure the project:
+   - **Framework Preset**: Vite
+   - **Build Command**: `npm run build`
+   - **Output Directory**: `dist`
+5. Add environment variables:
+   - `VITE_SUPABASE_URL` - Your Supabase project URL
+   - `VITE_SUPABASE_ANON_KEY` - Your Supabase anon key
+6. Click "Deploy"
+
+#### Option B: Using Vercel CLI
+
+```bash
+# Install Vercel CLI
+npm install -g vercel
+
+# Login to Vercel
+vercel login
+
+# Deploy
+vercel --prod
+```
+
+### 3. Configure GitHub Actions (For Automatic Deployments)
+
+1. Go to your GitHub repository settings
+2. Navigate to **Settings** → **Secrets and variables** → **Actions**
+3. Add the following secrets:
+
+   **Required Secrets:**
+   - `VERCEL_TOKEN` - Get from [Vercel Account Tokens](https://vercel.com/account/tokens)
+   - `VERCEL_PROJECT_ID` - Find in Vercel project settings
+   - `VERCEL_ORG_ID` - Find in Vercel project settings
+   - `VITE_SUPABASE_URL` - Your Supabase project URL
+   - `VITE_SUPABASE_ANON_KEY` - Your Supabase anon key
+
+4. Push to `main` branch to trigger automatic deployment
 
 ## 🛠️ Local Development
 
@@ -139,11 +105,10 @@ npm install
 cp .env.example .env
 ```
 
-4. Update `.env` with your credentials:
+4. Update `.env` with your Supabase credentials:
 ```env
-VITE_BASE44_APP_ID=your_app_id
-VITE_BASE44_BACKEND_URL=https://api.base44.com
-VITE_BASE44_FUNCTIONS_VERSION=v1
+VITE_SUPABASE_URL=your_supabase_project_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
 ```
 
 5. Start the development server:
@@ -167,7 +132,7 @@ biochemsafety/
 │   └── workflows/
 │       └── deploy.yml          # GitHub Actions workflow
 ├── src/
-│   ├── api/                    # Base44 API integration
+│   ├── api/                    # API integration
 │   ├── components/             # React components
 │   ├── pages/                  # Page components
 │   ├── lib/                    # Utilities and helpers
@@ -182,17 +147,22 @@ biochemsafety/
 
 ## 🔐 Environment Variables
 
-### Required (Base44)
-- `VITE_BASE44_APP_ID` - Your Base44 application ID
-- `VITE_BASE44_BACKEND_URL` - Base44 backend URL (usually `https://api.base44.com`)
-- `VITE_BASE44_FUNCTIONS_VERSION` - API version (usually `v1`)
-
-### Optional (Supabase)
+### Required
 - `VITE_SUPABASE_URL` - Your Supabase project URL
-- `VITE_SUPABASE_ANON_KEY` - Your Supabase anonymous key
+- `VITE_SUPABASE_ANON_KEY` - Your Supabase anonymous/public key
 
-### Optional (Build Configuration)
-- `BASE44_LEGACY_SDK_IMPORTS` - Enable legacy SDK imports (`true`/`false`)
+### Optional (Server-side only)
+- `SUPABASE_SERVICE_ROLE_KEY` - Your Supabase service role key (for server-side operations)
+
+## 🗄️ Database Schema
+
+The application uses Supabase with the following main tables:
+
+- **profiles** - User profiles (extends auth.users)
+- **services** - Biochemical safety services
+- **contact_inquiries** - Contact form submissions
+
+The full schema is available in [supabase/init.sql](supabase/init.sql) with Row Level Security (RLS) policies enabled.
 
 ## 🚦 Deployment Status
 
@@ -202,10 +172,10 @@ Once deployed, your application will be available at:
 
 ## 📚 Documentation
 
-- [Base44 Documentation](https://docs.base44.com)
-- [Vercel Documentation](https://vercel.com/docs)
 - [Supabase Documentation](https://supabase.com/docs)
+- [Vercel Documentation](https://vercel.com/docs)
 - [Vite Documentation](https://vitejs.dev)
+- [React Documentation](https://react.dev)
 
 ## 🐛 Troubleshooting
 
@@ -217,25 +187,34 @@ If the build fails on Vercel:
 3. Ensure output directory is set to `dist`
 4. Check Vercel build logs for specific errors
 
-### Base44 Connection Issues
+### Supabase Connection Issues
 
-1. Verify your `VITE_BASE44_APP_ID` is correct
-2. Check that `VITE_BASE44_BACKEND_URL` is accessible
-3. Ensure you're using the correct `VITE_BASE44_FUNCTIONS_VERSION`
+1. Verify your `VITE_SUPABASE_URL` is correct and accessible
+2. Check that `VITE_SUPABASE_ANON_KEY` matches your project
+3. Ensure your Supabase project is active and not paused
+4. Check RLS policies if you're having permission issues
 
 ### GitHub Actions Failures
 
 1. Verify all GitHub secrets are set correctly
 2. Check that `VERCEL_TOKEN` has the necessary permissions
-3. Review the Actions logs in your GitHub repository
+3. Ensure Supabase environment variables are added to secrets
+4. Review the Actions logs in your GitHub repository
+
+## 🔒 Security Notes
+
+- Never commit your `.env` file to version control
+- Keep your `SUPABASE_SERVICE_ROLE_KEY` secret - it bypasses RLS policies
+- Use Row Level Security (RLS) policies to protect your data
+- The `VITE_SUPABASE_ANON_KEY` is safe to expose in the frontend
 
 ## 📝 License
 
-This project is created with Base44.
+This project is created for biochemical safety services.
 
 ## 🤝 Support
 
 For issues or questions:
-- Base44: [Base44 Support](https://base44.com/support)
+- Supabase: [Supabase Support](https://supabase.com/support)
 - Vercel: [Vercel Support](https://vercel.com/support)
 - GitHub Issues: Create an issue in this repository
