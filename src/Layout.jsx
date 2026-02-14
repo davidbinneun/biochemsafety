@@ -109,8 +109,8 @@ export default function Layout({ children, currentPageName }) {
           <div className="flex items-center justify-between h-20">
             {/* Logo */}
             <Link to={createPageUrl('Home')} className="flex items-center gap-3">
-              <img 
-                src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/693ff28dde58acabbdf9d717/1a39d3806_diana_logo2.png" 
+              <img
+                src="https://bujzzaqciigxarpggcqt.storage.supabase.co/storage/v1/object/public/biochemsafety/logo.png"
                 alt="BioChem Safety & Health Logo"
                 className="h-12 w-auto"
               />

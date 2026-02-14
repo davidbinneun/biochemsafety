@@ -214,8 +214,8 @@ SELECT * FROM (VALUES
 ניהול שיח מקצועי בגובה העיניים עם צוותים
 יכולת לתרגם רגולציה לפתרונות ישימים, ולא רק על הנייר',
 '',
-'https://base44.app/api/apps/693ff28dde58acabbdf9d717/files/public/693ff28dde58acabbdf9d717/5a3fedb89_beakers1.png',
-'https://base44.app/api/apps/693ff28dde58acabbdf9d717/files/public/693ff28dde58acabbdf9d717/a700a2f98_DBPIndChempng.png',
+'https://bujzzaqciigxarpggcqt.storage.supabase.co/storage/v1/object/public/biochemsafety/beakers1.png',
+'https://bujzzaqciigxarpggcqt.storage.supabase.co/storage/v1/object/public/biochemsafety/DBPIndChem.png',
 1, 'davidbinneun@gmail.com'),
 
 (' בטיחות ביולוגית - יעוץ וניהול סיכונים ביולוגיים ', 'biological-safety-consulting',
@@ -225,8 +225,8 @@ SELECT * FROM (VALUES
 ניהול שיח מקצועי בגובה העיניים עם צוותים
 יכולת לתרגם רגולציה לפתרונות יישימים, ולא רק על הנייר',
 '',
-'https://base44.app/api/apps/693ff28dde58acabbdf9d717/files/public/693ff28dde58acabbdf9d717/6d52c7867_microscope1.png',
-'https://base44.app/api/apps/693ff28dde58acabbdf9d717/files/public/693ff28dde58acabbdf9d717/29de7b4f0_workingathoodpng.png',
+'https://bujzzaqciigxarpggcqt.storage.supabase.co/storage/v1/object/public/biochemsafety/microscope1.png',
+'https://bujzzaqciigxarpggcqt.storage.supabase.co/storage/v1/object/public/biochemsafety/workingathoodpng.png',
 2, 'davidbinneun@gmail.com'),
 
 ('גהות תעסוקתית - בריאות העובד', 'occupational-health',
@@ -236,8 +236,8 @@ SELECT * FROM (VALUES
 היכרות וניסיון רב עם מגוון תהליכים שמשפיעים על בריאות העובד
 היכרות מעמיקה עם הרגולציה ויכולת התאמתה לנתונים בשטח',
 '',
-'https://base44.app/api/apps/693ff28dde58acabbdf9d717/files/public/693ff28dde58acabbdf9d717/f9a7bcd75_health_13779529.png',
-'https://base44.app/api/apps/693ff28dde58acabbdf9d717/files/public/693ff28dde58acabbdf9d717/7f551b451_.png',
+'https://bujzzaqciigxarpggcqt.storage.supabase.co/storage/v1/object/public/biochemsafety/health_icon.png',
+'https://bujzzaqciigxarpggcqt.storage.supabase.co/storage/v1/object/public/biochemsafety/health_image.png',
 3, 'davidbinneun@gmail.com'),
 
 ('בטיחות וגיהות בננו-טכנולוגיות', 'Nanosafety',
@@ -245,8 +245,8 @@ SELECT * FROM (VALUES
 '<p class="ql-align-right"><strong>מהם ננו-חומרים - Nanomaterials?</strong></p><p class="ql-align-right">ננו חומרים הם חומרים בהם לפחות מימד אחד בין 1 - 100 ננומטר, בלתי נראים לעין ומתאפיינים בתכונות ייחודיות הנובעות מגודלם הזעיר.</p>',
 '',
 '',
-'https://base44.app/api/apps/693ff28dde58acabbdf9d717/files/public/693ff28dde58acabbdf9d717/a7fc30d4d_carbon-nanotube.png',
-'https://base44.app/api/apps/693ff28dde58acabbdf9d717/files/public/693ff28dde58acabbdf9d717/dc78f18db_ac6ee38af_Scientistinnanotechla.png',
+'https://bujzzaqciigxarpggcqt.storage.supabase.co/storage/v1/object/public/biochemsafety/carbon-nanotube.png',
+'https://bujzzaqciigxarpggcqt.storage.supabase.co/storage/v1/object/public/biochemsafety/scientist-nanotech.png',
 4, 'davidbinneun@gmail.com'),
 
 ('הבטחת איכות ואמינות', 'Quality Assurance & Reliability',
@@ -256,8 +256,8 @@ SELECT * FROM (VALUES
 עתיר ידע ונסיון
 מרצה מוערך',
 '',
-'https://base44.app/api/apps/693ff28dde58acabbdf9d717/files/public/693ff28dde58acabbdf9d717/822603510_reliability.png',
-'https://base44.app/api/apps/693ff28dde58acabbdf9d717/files/public/693ff28dde58acabbdf9d717/6f184e7ae_avpovi.png',
+'https://bujzzaqciigxarpggcqt.storage.supabase.co/storage/v1/object/public/biochemsafety/reliability.png',
+'https://bujzzaqciigxarpggcqt.storage.supabase.co/storage/v1/object/public/biochemsafety/avpovi.png',
 5, 'davidbinneun@gmail.com'),
 
 ('היתר רעלים', 'Poisons permit',
@@ -267,8 +267,8 @@ SELECT * FROM (VALUES
 משלבת בין דרישות החוק, בטיחות והכרת תהליכי העבודה בפועל – לא רק תיאוריה
 היתרי רעלים שנבנים מתוך היכרות אמיתית עם החומרים, השימוש והסיכונים בפועל',
 '',
-'https://base44.app/api/apps/693ff28dde58acabbdf9d717/files/public/693ff28dde58acabbdf9d717/251883fab_chemistry.png',
-'https://base44.app/api/apps/693ff28dde58acabbdf9d717/files/public/693ff28dde58acabbdf9d717/2278f1947_Scientistpointingatcolorfulbottles.png',
+'https://bujzzaqciigxarpggcqt.storage.supabase.co/storage/v1/object/public/biochemsafety/chemistry.png',
+'https://bujzzaqciigxarpggcqt.storage.supabase.co/storage/v1/object/public/biochemsafety/scientist-bottles.png',
 6, 'davidbinneun@gmail.com'),
 
 ('ניהול סיכונים', 'risk-management',
@@ -277,8 +277,8 @@ SELECT * FROM (VALUES
 'עבודה משותפת של מומחים : כימיה|ביולוגיה| הנדסה|
 ידע וניסיון מצטבר',
 '',
-'https://base44.app/api/apps/693ff28dde58acabbdf9d717/files/public/693ff28dde58acabbdf9d717/edee75f24_risk-assessment.png',
-'https://base44.app/api/apps/693ff28dde58acabbdf9d717/files/public/693ff28dde58acabbdf9d717/13633c81c_.png',
+'https://bujzzaqciigxarpggcqt.storage.supabase.co/storage/v1/object/public/biochemsafety/risk-assessment.png',
+'https://bujzzaqciigxarpggcqt.storage.supabase.co/storage/v1/object/public/biochemsafety/risk-image.png',
 7, 'davidbinneun@gmail.com')
 ) AS v(title, slug, short_description, full_description, benefits, process, icon_url, image_url, "order", created_by)
 WHERE NOT EXISTS (SELECT 1 FROM public.services WHERE slug = v.slug);

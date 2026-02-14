@@ -79,7 +79,7 @@ export default function Hero() {
         {/* Image */}
         <div className="order-2 md:order-2 flex justify-center">
           <img 
-            src="https://www.biochemsafety.com/wp-content/uploads/2021/10/Laboratory-1.gif"
+            src="https://bujzzaqciigxarpggcqt.storage.supabase.co/storage/v1/object/public/biochemsafety/Laboratory-1.gif"
             alt="Laboratory"
             className="w-full max-w-2xl h-auto rounded-3xl"
           />
