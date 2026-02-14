@@ -17,14 +17,17 @@ CREATE TABLE IF NOT EXISTS public.profiles (
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 
 -- Policies for profiles table
+DROP POLICY IF EXISTS "Public profiles are viewable by everyone." ON public.profiles;
 CREATE POLICY "Public profiles are viewable by everyone."
   ON public.profiles FOR SELECT
   USING (true);
 
+DROP POLICY IF EXISTS "Users can insert their own profile." ON public.profiles;
 CREATE POLICY "Users can insert their own profile."
   ON public.profiles FOR INSERT
   WITH CHECK (auth.uid() = id);
 
+DROP POLICY IF EXISTS "Users can update their own profile." ON public.profiles;
 CREATE POLICY "Users can update their own profile."
   ON public.profiles FOR UPDATE
   USING (auth.uid() = id);
@@ -54,6 +57,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Trigger to automatically update updated_at
+DROP TRIGGER IF EXISTS handle_profiles_updated_at ON public.profiles;
 CREATE TRIGGER handle_profiles_updated_at
   BEFORE UPDATE ON public.profiles
   FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
@@ -80,14 +84,17 @@ CREATE TABLE IF NOT EXISTS public.services (
 ALTER TABLE public.services ENABLE ROW LEVEL SECURITY;
 
 -- Policies for services table
+DROP POLICY IF EXISTS "Services are viewable by everyone." ON public.services;
 CREATE POLICY "Services are viewable by everyone."
   ON public.services FOR SELECT
   USING (true);
 
+DROP POLICY IF EXISTS "Only authenticated users can manage services." ON public.services;
 CREATE POLICY "Only authenticated users can manage services."
   ON public.services FOR ALL
   USING (auth.uid() IS NOT NULL);
 
+DROP TRIGGER IF EXISTS handle_services_updated_at ON public.services;
 CREATE TRIGGER handle_services_updated_at
   BEFORE UPDATE ON public.services
   FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
@@ -110,14 +117,17 @@ CREATE TABLE IF NOT EXISTS public.content_blocks (
 ALTER TABLE public.content_blocks ENABLE ROW LEVEL SECURITY;
 
 -- Policies for content_blocks table
+DROP POLICY IF EXISTS "Content blocks are viewable by everyone." ON public.content_blocks;
 CREATE POLICY "Content blocks are viewable by everyone."
   ON public.content_blocks FOR SELECT
   USING (true);
 
+DROP POLICY IF EXISTS "Only authenticated users can manage content blocks." ON public.content_blocks;
 CREATE POLICY "Only authenticated users can manage content blocks."
   ON public.content_blocks FOR ALL
   USING (auth.uid() IS NOT NULL);
 
+DROP TRIGGER IF EXISTS handle_content_blocks_updated_at ON public.content_blocks;
 CREATE TRIGGER handle_content_blocks_updated_at
   BEFORE UPDATE ON public.content_blocks
   FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
@@ -138,20 +148,24 @@ CREATE TABLE IF NOT EXISTS public.contact_inquiries (
 ALTER TABLE public.contact_inquiries ENABLE ROW LEVEL SECURITY;
 
 -- Policies for contact_inquiries table
+DROP POLICY IF EXISTS "Anyone can submit contact inquiries." ON public.contact_inquiries;
 CREATE POLICY "Anyone can submit contact inquiries."
   ON public.contact_inquiries FOR INSERT
   WITH CHECK (true);
 
+DROP POLICY IF EXISTS "Only authenticated users can view contact inquiries." ON public.contact_inquiries;
 CREATE POLICY "Only authenticated users can view contact inquiries."
   ON public.contact_inquiries FOR SELECT
   USING (auth.uid() IS NOT NULL);
 
+DROP TRIGGER IF EXISTS handle_contact_inquiries_updated_at ON public.contact_inquiries;
 CREATE TRIGGER handle_contact_inquiries_updated_at
   BEFORE UPDATE ON public.contact_inquiries
   FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
 
--- Insert Services data
-INSERT INTO public.services (title, slug, short_description, full_description, benefits, process, icon_url, image_url, "order", created_by) VALUES
+-- Insert Services data (only if not already exists)
+INSERT INTO public.services (title, slug, short_description, full_description, benefits, process, icon_url, image_url, "order", created_by)
+SELECT * FROM (VALUES
 ('בטיחות בכימיה - ניהול סיכונים בתהליכים כימיים', 'Chemical safety-Risk Assessment in Chemical processes',
 '<p class="ql-align-right"><strong>"מתגובה למניעה":</strong> <strong>ייעוץ מקצועי שמחבר בין כימיה, תהליך ועבודה בשטח</strong>.</p><p class="ql-align-right">העבודה עם חומרים ותהליכים כימיים מחייבת הסתכלות מעשית ולא רק נהלים כתובים. "הבטיחות התהליכית" מתמקדת בזיהוי, ניתוח והטמעת אמצעי שליטה בסיכונים הנובעים מחומרים מסוכנים ותהליכים.</p>',
 '<h3 class="ql-align-right">הייעוץ בתחום הכימיה מבוסס על ניסיון מעבדתי רב והיכרות עם אתגרי העבודה, במטרה לזהות סיכונים בזמן, לצמצם חשיפה וליישם פתרונות בטיחות שמתאימים למציאות בשטח ולעמידה בדרישות ורגולציה והתקנים המתאימים </h3>',
@@ -224,10 +238,13 @@ INSERT INTO public.services (title, slug, short_description, full_description, b
 '',
 'https://base44.app/api/apps/693ff28dde58acabbdf9d717/files/public/693ff28dde58acabbdf9d717/edee75f24_risk-assessment.png',
 'https://base44.app/api/apps/693ff28dde58acabbdf9d717/files/public/693ff28dde58acabbdf9d717/13633c81c_.png',
-7, 'davidbinneun@gmail.com');
+7, 'davidbinneun@gmail.com')
+) AS v(title, slug, short_description, full_description, benefits, process, icon_url, image_url, "order", created_by)
+WHERE NOT EXISTS (SELECT 1 FROM public.services WHERE slug = v.slug);
 
 -- Insert Content Blocks data (sample entries - you can add more as needed)
-INSERT INTO public.content_blocks (page, section, title, content, icon, "order", created_by) VALUES
+INSERT INTO public.content_blocks (page, section, title, content, icon, "order", created_by)
+SELECT * FROM (VALUES
 ('home', 'hero', 'שם מלא', 'ד"ר דיאנה בלנק-פורת', '', 1, 'davidbinneun@gmail.com'),
 ('home', 'hero', 'שם חברה', 'BioChem Safety & Health', '', 2, 'davidbinneun@gmail.com'),
 ('home', 'hero', 'תפקיד 1', 'ביוכימאית בכירה', '', 3, 'davidbinneun@gmail.com'),
@@ -247,4 +264,9 @@ INSERT INTO public.content_blocks (page, section, title, content, icon, "order",
 ממונה בטיחות וגהות בעבודה', '', 2, 'davidbinneun@gmail.com'),
 ('layout', 'footer-links', 'כותרת קישורים', 'קישורים מהירים', '', 1, 'davidbinneun@gmail.com'),
 ('layout', 'footer-contact', 'כותרת יצירת קשר', 'יצירת קשר', '', 1, 'davidbinneun@gmail.com'),
-('layout', 'footer-copyright', 'זכויות יוצרים', 'ד"ר דיאנה בלנק-פורת - BioChem Safety & Health. כל הזכויות שמורות.', '', 1, 'davidbinneun@gmail.com');
+('layout', 'footer-copyright', 'זכויות יוצרים', 'ד"ר דיאנה בלנק-פורת - BioChem Safety & Health. כל הזכויות שמורות.', '', 1, 'davidbinneun@gmail.com')
+) AS v(page, section, title, content, icon, "order", created_by)
+WHERE NOT EXISTS (
+  SELECT 1 FROM public.content_blocks
+  WHERE page = v.page AND section = v.section AND title = v.title
+);
