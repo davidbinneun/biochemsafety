@@ -1,21 +1,45 @@
 import React from 'react';
 import { Beaker } from 'lucide-react';
-import { base44 } from '@/api/base44Client';
+import { getServices } from '@/lib/supabaseClient';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '../utils';
 import { Button } from "@/components/ui/button";
 
 export default function Services() {
-  const { data: services = [], isLoading } = useQuery({
+  const { data: services = [], isLoading, error } = useQuery({
     queryKey: ['services'],
-    queryFn: () => base44.entities.Service.list('order'),
+    queryFn: () => getServices('order'),
   });
+
+  console.log('Services query:', { services, isLoading, error });
 
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <p className="text-gray-600">טוען...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-600 mb-4">שגיאה בטעינת השירותים</p>
+          <p className="text-gray-600 text-sm">{error.message}</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!services || services.length === 0) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-600 mb-4">לא נמצאו שירותים</p>
+          <p className="text-sm text-gray-500">אנא וודא שהנתונים נטענו למסד הנתונים</p>
+        </div>
       </div>
     );
   }

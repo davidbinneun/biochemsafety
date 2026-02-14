@@ -1,6 +1,6 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
+import { getServiceBySlug } from '@/lib/supabaseClient';
 import { Beaker, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '../utils';
@@ -10,12 +10,11 @@ export default function ServiceDetail() {
   const urlParams = new URLSearchParams(window.location.search);
   const serviceSlug = urlParams.get('id') ? decodeURIComponent(urlParams.get('id')) : null;
 
-  const { data: services = [], isLoading } = useQuery({
-    queryKey: ['services'],
-    queryFn: () => base44.entities.Service.list(),
+  const { data: service, isLoading, error } = useQuery({
+    queryKey: ['service', serviceSlug],
+    queryFn: () => getServiceBySlug(serviceSlug),
+    enabled: !!serviceSlug,
   });
-
-  const service = services.find(s => s.slug === serviceSlug || s.id === serviceSlug);
 
   // Convert absolute URLs to relative paths for internal links and remove target="_blank"
   const convertInternalLinks = (html) => {

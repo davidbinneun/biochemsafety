@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { createPageUrl } from "./utils";
 import { Menu, X, Phone, Mail, MessageCircle } from 'lucide-react';
 import { Button } from "@/components/ui/button";
-import { base44 } from "@/api/base44Client";
+import { getContentBlocks } from "@/lib/supabaseClient";
 import { useQuery } from "@tanstack/react-query";
 
 export default function Layout({ children, currentPageName }) {
@@ -52,17 +52,17 @@ export default function Layout({ children, currentPageName }) {
 
   const { data: footerContent = [] } = useQuery({
     queryKey: ['contentBlocks', 'layout', 'footer'],
-    queryFn: () => base44.entities.ContentBlock.filter({ page: 'layout', section: 'footer' }),
+    queryFn: () => getContentBlocks({ page: 'layout', section: 'footer' }),
   });
 
   const { data: copyrightContent = [] } = useQuery({
     queryKey: ['contentBlocks', 'layout', 'footer-copyright'],
-    queryFn: () => base44.entities.ContentBlock.filter({ page: 'layout', section: 'footer-copyright' }),
+    queryFn: () => getContentBlocks({ page: 'layout', section: 'footer-copyright' }),
   });
 
   const { data: contactInfo = [] } = useQuery({
     queryKey: ['contentBlocks', 'global', 'contact-info'],
-    queryFn: () => base44.entities.ContentBlock.filter({ page: 'global', section: 'contact-info' }),
+    queryFn: () => getContentBlocks({ page: 'global', section: 'contact-info' }),
   });
 
   const getContactInfo = (key, fallback) => {

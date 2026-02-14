@@ -1,11 +1,14 @@
 import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = import.meta.env.SUPABASE_URL
-const supabaseAnonKey = import.meta.env.SUPABASE_SECRET_KEY
+const supabaseProjectId = import.meta.env.VITE_SUPABASE_PROJECT_ID
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || import.meta.env.VITE_SUPABASE_SECRET_KEY
 
-if (!supabaseUrl || !supabaseAnonKey) {
+if (!supabaseProjectId || !supabaseAnonKey) {
   throw new Error('Missing Supabase environment variables. Please check your .env.local file.')
 }
+
+// Construct the Supabase URL from the project ID
+const supabaseUrl = `https://${supabaseProjectId}.supabase.co`
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
@@ -39,4 +42,42 @@ export const getCurrentUser = async () => {
 export const getSession = async () => {
   const { data: { session }, error } = await supabase.auth.getSession()
   return { session, error }
+}
+
+// Data fetching helpers
+export const getServices = async (orderBy = 'order') => {
+  const { data, error } = await supabase
+    .from('services')
+    .select('*')
+    .order(orderBy)
+
+  if (error) throw error
+  return data
+}
+
+export const getServiceBySlug = async (slug) => {
+  const { data, error } = await supabase
+    .from('services')
+    .select('*')
+    .eq('slug', slug)
+    .single()
+
+  if (error) throw error
+  return data
+}
+
+export const getContentBlocks = async (filters = {}) => {
+  let query = supabase.from('content_blocks').select('*')
+
+  if (filters.page) {
+    query = query.eq('page', filters.page)
+  }
+  if (filters.section) {
+    query = query.eq('section', filters.section)
+  }
+
+  const { data, error } = await query.order('order')
+
+  if (error) throw error
+  return data
 }

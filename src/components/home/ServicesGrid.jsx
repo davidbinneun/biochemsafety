@@ -3,21 +3,27 @@ import { Beaker } from 'lucide-react';
 import { Link } from "react-router-dom";
 import { createPageUrl } from "../../utils";
 import { Button } from "@/components/ui/button";
-import { base44 } from "@/api/base44Client";
+import { getServices, getContentBlocks } from "@/lib/supabaseClient";
 import { useQuery } from "@tanstack/react-query";
 
 export default function ServicesGrid() {
-  const { data: titleContent = [] } = useQuery({
+  const { data: titleContent = [], error: titleError } = useQuery({
     queryKey: ['contentBlocks', 'home', 'services-title'],
-    queryFn: () => base44.entities.ContentBlock.filter({ page: 'home', section: 'services-title' }),
+    queryFn: () => getContentBlocks({ page: 'home', section: 'services-title' }),
   });
 
-  const { data: services = [] } = useQuery({
+  const { data: services = [], isLoading, error: servicesError } = useQuery({
     queryKey: ['services'],
-    queryFn: () => base44.entities.Service.list('order'),
+    queryFn: () => getServices('order'),
   });
+
+  console.log('ServicesGrid:', { services, titleContent, isLoading, servicesError, titleError });
 
   const title = titleContent[0]?.content || 'תחומי התמחות';
+
+  if (servicesError) {
+    console.error('Services error:', servicesError);
+  }
 
   return (
     <div className="py-20 px-4 bg-white">

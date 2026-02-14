@@ -1,22 +1,22 @@
 import React from 'react';
 import { Phone, Mail, MessageCircle, Linkedin } from 'lucide-react';
-import { base44 } from "@/api/base44Client";
+import { getContentBlocks } from "@/lib/supabaseClient";
 import { useQuery } from "@tanstack/react-query";
 
 export default function ContactSection() {
   const { data: titleContent = [] } = useQuery({
     queryKey: ['contentBlocks', 'home', 'contact-title'],
-    queryFn: () => base44.entities.ContentBlock.filter({ page: 'home', section: 'contact-title' }),
+    queryFn: () => getContentBlocks({ page: 'home', section: 'contact-title' }),
   });
 
   const { data: subtitleContent = [] } = useQuery({
     queryKey: ['contentBlocks', 'home', 'contact-subtitle'],
-    queryFn: () => base44.entities.ContentBlock.filter({ page: 'home', section: 'contact-subtitle' }),
+    queryFn: () => getContentBlocks({ page: 'home', section: 'contact-subtitle' }),
   });
 
   const { data: contactInfo = [] } = useQuery({
     queryKey: ['contentBlocks', 'global', 'contact-info'],
-    queryFn: () => base44.entities.ContentBlock.filter({ page: 'global', section: 'contact-info' }),
+    queryFn: () => getContentBlocks({ page: 'global', section: 'contact-info' }),
   });
 
   const getContactInfo = (key, fallback) => {

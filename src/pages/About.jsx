@@ -1,12 +1,12 @@
 import React from 'react';
 import { Award, BookOpen, Target, Users, Briefcase, Shield, CheckCircle, GraduationCap, Building2 } from 'lucide-react';
-import { base44 } from '@/api/base44Client';
+import { getContentBlocks } from '@/lib/supabaseClient';
 import { useQuery } from '@tanstack/react-query';
 
 export default function About() {
   const { data: aboutContent = [] } = useQuery({
     queryKey: ['contentBlocks', 'about'],
-    queryFn: () => base44.entities.ContentBlock.filter({ page: 'about' }),
+    queryFn: () => getContentBlocks({ page: 'about' }),
   });
 
   const getContentData = (section, fallback) => {
