@@ -1,5 +1,4 @@
 -- Supabase initialization schema for Biochemical Safety application
--- This file provides a basic starting schema. Modify according to your needs.
 
 -- Enable UUID extension
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
@@ -59,16 +58,23 @@ CREATE TRIGGER handle_profiles_updated_at
   BEFORE UPDATE ON public.profiles
   FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
 
--- Example: Services table (for managing biochemical safety services)
+-- Services table (for biochemical safety services)
 CREATE TABLE IF NOT EXISTS public.services (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   title TEXT NOT NULL,
-  description TEXT,
-  category TEXT,
-  icon TEXT,
+  slug TEXT UNIQUE NOT NULL,
+  short_description TEXT,
+  full_description TEXT,
+  benefits TEXT,
+  process TEXT,
+  icon_url TEXT,
+  image_url TEXT,
+  "order" INTEGER DEFAULT 0,
   is_active BOOLEAN DEFAULT true,
+  is_sample BOOLEAN DEFAULT false,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
+  created_by TEXT
 );
 
 ALTER TABLE public.services ENABLE ROW LEVEL SECURITY;
@@ -78,21 +84,45 @@ CREATE POLICY "Services are viewable by everyone."
   ON public.services FOR SELECT
   USING (true);
 
-CREATE POLICY "Only admins can manage services."
+CREATE POLICY "Only authenticated users can manage services."
   ON public.services FOR ALL
-  USING (
-    EXISTS (
-      SELECT 1 FROM public.profiles
-      WHERE profiles.id = auth.uid()
-      AND profiles.role = 'admin'
-    )
-  );
+  USING (auth.uid() IS NOT NULL);
 
 CREATE TRIGGER handle_services_updated_at
   BEFORE UPDATE ON public.services
   FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
 
--- Example: Contact inquiries table
+-- Content blocks table (for page content management)
+CREATE TABLE IF NOT EXISTS public.content_blocks (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  page TEXT NOT NULL,
+  section TEXT NOT NULL,
+  title TEXT,
+  content TEXT,
+  icon TEXT,
+  "order" INTEGER DEFAULT 0,
+  is_sample BOOLEAN DEFAULT false,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
+  created_by TEXT
+);
+
+ALTER TABLE public.content_blocks ENABLE ROW LEVEL SECURITY;
+
+-- Policies for content_blocks table
+CREATE POLICY "Content blocks are viewable by everyone."
+  ON public.content_blocks FOR SELECT
+  USING (true);
+
+CREATE POLICY "Only authenticated users can manage content blocks."
+  ON public.content_blocks FOR ALL
+  USING (auth.uid() IS NOT NULL);
+
+CREATE TRIGGER handle_content_blocks_updated_at
+  BEFORE UPDATE ON public.content_blocks
+  FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+
+-- Contact inquiries table
 CREATE TABLE IF NOT EXISTS public.contact_inquiries (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   name TEXT NOT NULL,
@@ -112,16 +142,109 @@ CREATE POLICY "Anyone can submit contact inquiries."
   ON public.contact_inquiries FOR INSERT
   WITH CHECK (true);
 
-CREATE POLICY "Only admins can view contact inquiries."
+CREATE POLICY "Only authenticated users can view contact inquiries."
   ON public.contact_inquiries FOR SELECT
-  USING (
-    EXISTS (
-      SELECT 1 FROM public.profiles
-      WHERE profiles.id = auth.uid()
-      AND profiles.role = 'admin'
-    )
-  );
+  USING (auth.uid() IS NOT NULL);
 
 CREATE TRIGGER handle_contact_inquiries_updated_at
   BEFORE UPDATE ON public.contact_inquiries
   FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+
+-- Insert Services data
+INSERT INTO public.services (title, slug, short_description, full_description, benefits, process, icon_url, image_url, "order", created_by) VALUES
+('בטיחות בכימיה - ניהול סיכונים בתהליכים כימיים', 'Chemical safety-Risk Assessment in Chemical processes',
+'<p class="ql-align-right"><strong>"מתגובה למניעה":</strong> <strong>ייעוץ מקצועי שמחבר בין כימיה, תהליך ועבודה בשטח</strong>.</p><p class="ql-align-right">העבודה עם חומרים ותהליכים כימיים מחייבת הסתכלות מעשית ולא רק נהלים כתובים. "הבטיחות התהליכית" מתמקדת בזיהוי, ניתוח והטמעת אמצעי שליטה בסיכונים הנובעים מחומרים מסוכנים ותהליכים.</p>',
+'<h3 class="ql-align-right">הייעוץ בתחום הכימיה מבוסס על ניסיון מעבדתי רב והיכרות עם אתגרי העבודה, במטרה לזהות סיכונים בזמן, לצמצם חשיפה וליישם פתרונות בטיחות שמתאימים למציאות בשטח ולעמידה בדרישות ורגולציה והתקנים המתאימים </h3>',
+'ניסיון מעשי בעבודה עם חומרים ותהליכים מסוכנים
+ניהול שיח מקצועי בגובה העיניים עם צוותים
+יכולת לתרגם רגולציה לפתרונות ישימים, ולא רק על הנייר',
+'',
+'https://base44.app/api/apps/693ff28dde58acabbdf9d717/files/public/693ff28dde58acabbdf9d717/5a3fedb89_beakers1.png',
+'https://base44.app/api/apps/693ff28dde58acabbdf9d717/files/public/693ff28dde58acabbdf9d717/a700a2f98_DBPIndChempng.png',
+1, 'davidbinneun@gmail.com'),
+
+(' בטיחות ביולוגית - יעוץ וניהול סיכונים ביולוגיים ', 'biological-safety-consulting',
+'<p class="ql-align-right"><strong>מתרגמים את הבטיחות הביולוגית לעבודה בטוחה עם גורמי סיכון ביולוגיים</strong></p><p class="ql-align-right">מחקר ופיתוח מואצים, ייצור אבחוני וגידול גורמים ביולוגיים כגון תאים, חיידקים ונגיפים, מציבים אתגר מתמשך המחייב פיתוח והתאמה של כלים מתקדמים לניהול סיכונים תוך שמירה על בריאות העובדים ומניעת חשיפתם לסיכון</p>',
+'<h3 class="ql-align-right">ניהול סיכונים ביולוגיים במעבדות ובמקומות עבודה שונים נעשה על ידי מומחית שמבינה גם את המדע וגם את תהליכים, סביבות העבודה והרגולציה</h3>',
+'ניסיון מעשי ומיומנויות בעבודה במעבדות מיקרוביולוגיות ורפואיות
+ניהול שיח מקצועי בגובה העיניים עם צוותים
+יכולת לתרגם רגולציה לפתרונות יישימים, ולא רק על הנייר',
+'',
+'https://base44.app/api/apps/693ff28dde58acabbdf9d717/files/public/693ff28dde58acabbdf9d717/6d52c7867_microscope1.png',
+'https://base44.app/api/apps/693ff28dde58acabbdf9d717/files/public/693ff28dde58acabbdf9d717/29de7b4f0_workingathoodpng.png',
+2, 'davidbinneun@gmail.com'),
+
+('גהות תעסוקתית - בריאות העובד', 'occupational-health',
+'<p class="ql-align-justify"><strong>מחלת מקצוע אינה "גזירה משמיים" והחשוב מכל הוא שהיא ניתנת למניעה או לפיצוי</strong></p>',
+'<h3 class="ql-align-right"><strong>מחלת מקצוע או מחלה תעסוקתית הינה פגיעה בריאותית הנגרמת עקב תנאי עבודה, חשיפה לחומרים או עיסוק ייחודי.</strong></h3>',
+' מרצה בתחום בטיחות וגהות בעבודה באקדמיה, מכללות, קורסים וימי עיון
+היכרות וניסיון רב עם מגוון תהליכים שמשפיעים על בריאות העובד
+היכרות מעמיקה עם הרגולציה ויכולת התאמתה לנתונים בשטח',
+'',
+'https://base44.app/api/apps/693ff28dde58acabbdf9d717/files/public/693ff28dde58acabbdf9d717/f9a7bcd75_health_13779529.png',
+'https://base44.app/api/apps/693ff28dde58acabbdf9d717/files/public/693ff28dde58acabbdf9d717/7f551b451_.png',
+3, 'davidbinneun@gmail.com'),
+
+('בטיחות וגיהות בננו-טכנולוגיות', 'Nanosafety',
+'<p class="ql-align-right"><strong>ננוטכנולוגיה: "פוטנציאל עצום במימדים הקטנים"</strong></p><p class="ql-align-right"><strong>NanoSafety | ננו-בטיחות: שליטה בגורמי סיכון בקנה מידה ננומטרי</strong></p>',
+'<p class="ql-align-right"><strong>מהם ננו-חומרים - Nanomaterials?</strong></p><p class="ql-align-right">ננו חומרים הם חומרים בהם לפחות מימד אחד בין 1 - 100 ננומטר, בלתי נראים לעין ומתאפיינים בתכונות ייחודיות הנובעות מגודלם הזעיר.</p>',
+'',
+'',
+'https://base44.app/api/apps/693ff28dde58acabbdf9d717/files/public/693ff28dde58acabbdf9d717/a7fc30d4d_carbon-nanotube.png',
+'https://base44.app/api/apps/693ff28dde58acabbdf9d717/files/public/693ff28dde58acabbdf9d717/dc78f18db_ac6ee38af_Scientistinnanotechla.png',
+4, 'davidbinneun@gmail.com'),
+
+('הבטחת איכות ואמינות', 'Quality Assurance & Reliability',
+'<p class="ql-align-right"><strong>"ייזום עקבי במקום תיקון ותגובה לכשל"</strong></p><p class="ql-align-right"><strong><u>יעוץ והדרכות לאיכות</u>: אבינועם פורת , MsC מהנדס תעשיה וניהול מוסמך אמינות והבטחת איכות</strong></p>',
+'<p class="ql-align-right"><strong>אמינות</strong> המוצר היא תכונה שמאפשרת הפעלה שוטפת לאורך מחזור חיי המוצר, תוך כדי שמירה על האיכות</p>',
+'מומחיות
+עתיר ידע ונסיון
+מרצה מוערך',
+'',
+'https://base44.app/api/apps/693ff28dde58acabbdf9d717/files/public/693ff28dde58acabbdf9d717/822603510_reliability.png',
+'https://base44.app/api/apps/693ff28dde58acabbdf9d717/files/public/693ff28dde58acabbdf9d717/6f184e7ae_avpovi.png',
+5, 'davidbinneun@gmail.com'),
+
+('היתר רעלים', 'Poisons permit',
+'<p class="ql-align-right"><strong>כל עסק שברשותו חומרים מסוכנים נדרש להחזיק ולטפל בחומרים אלו ברישיון</strong></p>',
+'<h3 class="ql-align-right"><strong>מהי בקשה להיתר רעלים</strong></h3><p class="ql-align-right">לצורך קבלת היתר רעלים נדרש מבקש ההיתר למלא אחר הדרישות של המשרד להגנת הסביבה</p>',
+'ידע מקצועי וניסיון רב בעבודה עם חומרים מסוכנים
+משלבת בין דרישות החוק, בטיחות והכרת תהליכי העבודה בפועל – לא רק תיאוריה
+היתרי רעלים שנבנים מתוך היכרות אמיתית עם החומרים, השימוש והסיכונים בפועל',
+'',
+'https://base44.app/api/apps/693ff28dde58acabbdf9d717/files/public/693ff28dde58acabbdf9d717/251883fab_chemistry.png',
+'https://base44.app/api/apps/693ff28dde58acabbdf9d717/files/public/693ff28dde58acabbdf9d717/2278f1947_Scientistpointingatcolorfulbottles.png',
+6, 'davidbinneun@gmail.com'),
+
+('ניהול סיכונים', 'risk-management',
+'<h3 class="ql-align-right"><strong>ניהול סיכונים | סקר סיכונים כימיים| סקר סיכונים ביולוגיים | ייעוץ מקצועי מותאם לעסק תוך חסכון בזמן ובטעויות בדרך</strong></h3>',
+'<h3 class="ql-align-right"><strong>"אם משהו יכול להשתבש במוקדם או מאוחר זה יקרה"</strong></h3><h3 class="ql-align-right">בניהול סיכונים <strong>חוק מרפי</strong> הידוע תמיד נמצא לפנינו</h3>',
+'עבודה משותפת של מומחים : כימיה|ביולוגיה| הנדסה|
+ידע וניסיון מצטבר',
+'',
+'https://base44.app/api/apps/693ff28dde58acabbdf9d717/files/public/693ff28dde58acabbdf9d717/edee75f24_risk-assessment.png',
+'https://base44.app/api/apps/693ff28dde58acabbdf9d717/files/public/693ff28dde58acabbdf9d717/13633c81c_.png',
+7, 'davidbinneun@gmail.com');
+
+-- Insert Content Blocks data (sample entries - you can add more as needed)
+INSERT INTO public.content_blocks (page, section, title, content, icon, "order", created_by) VALUES
+('home', 'hero', 'שם מלא', 'ד"ר דיאנה בלנק-פורת', '', 1, 'davidbinneun@gmail.com'),
+('home', 'hero', 'שם חברה', 'BioChem Safety & Health', '', 2, 'davidbinneun@gmail.com'),
+('home', 'hero', 'תפקיד 1', 'ביוכימאית בכירה', '', 3, 'davidbinneun@gmail.com'),
+('home', 'hero', 'תפקיד 2', 'מוסמכת בריאות תעסוקתית וסביבתית', '', 4, 'davidbinneun@gmail.com'),
+('home', 'hero', 'תפקיד 3', 'ממונה בטיחות וגהות בעבודה', '', 5, 'davidbinneun@gmail.com'),
+('home', 'services-title', 'כותרת תחומי התמחות', 'תחומי התמחות', '', 1, 'davidbinneun@gmail.com'),
+('home', 'contact-title', 'כותרת יצירת קשר', 'יצירת קשר', '', 1, 'davidbinneun@gmail.com'),
+('home', 'contact-subtitle', 'תת כותרת יצירת קשר', 'BioChem Safety & Health - נשמח לעמוד לשירותכם ולענות על כל שאלה', '', 1, 'davidbinneun@gmail.com'),
+('about', 'title', 'כותרת ראשית', 'אודות', '', 1, 'davidbinneun@gmail.com'),
+('about', 'education', 'education', '[{"degree":"PHD","field":"מדעי החיים. מחקר באונקולוגיה ופרמקולוגיה","institution":"אוניברסיטת בר-אילן"},{"degree":" MPH","field":" בריאות הציבור: בריאות סביבתית וגהות תעסוקתית ","institution":"אוניברסיטת חיפה"},{"degree":" MHA","field":"   בריאות הציבור וניהול מערכות בריאות ","institution":"אוניברסיטת בר אילן"},{"degree":"  MSC","field":"מוסמכת ביוכימיה","institution":"אוניברסיטת סנטה פה, ארגנטינה"},{"degree":"הסמכה","field":"ממונה בטיחות וגהות","institution":"משרד העבודה, מנהל הבטיחות"}]', '', 0, 'blankporat@gmail.com'),
+('contact', 'title', 'כותרת ראשית', 'יצירת קשר', '', 1, 'davidbinneun@gmail.com'),
+('contact', 'professional-title', 'שם מקצועי', 'ד"ר דיאנה בלנק-פורת', '', 1, 'davidbinneun@gmail.com'),
+('contact', 'professional-title', 'שם חברה', 'BioChem Safety & Health', '', 2, 'davidbinneun@gmail.com'),
+('layout', 'footer', 'שם מלא', 'ד"ר דיאנה בלנק-פורת', '', 1, 'davidbinneun@gmail.com'),
+('layout', 'footer', 'תיאור', 'ביוכימאית בכירה
+מוסמכת בריאות תעסוקתית וסביבתית
+ממונה בטיחות וגהות בעבודה', '', 2, 'davidbinneun@gmail.com'),
+('layout', 'footer-links', 'כותרת קישורים', 'קישורים מהירים', '', 1, 'davidbinneun@gmail.com'),
+('layout', 'footer-contact', 'כותרת יצירת קשר', 'יצירת קשר', '', 1, 'davidbinneun@gmail.com'),
+('layout', 'footer-copyright', 'זכויות יוצרים', 'ד"ר דיאנה בלנק-פורת - BioChem Safety & Health. כל הזכויות שמורות.', '', 1, 'davidbinneun@gmail.com');
