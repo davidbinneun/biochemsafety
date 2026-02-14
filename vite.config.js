@@ -5,6 +5,9 @@ import { defineConfig } from 'vite'
 // https://vite.dev/config/
 export default defineConfig({
   logLevel: 'error', // Suppress warnings, only show errors
+  server: {
+    port: 1998
+  },
   plugins: [
     base44({
       // Support for legacy code that imports the base44 SDK with @/integrations, @/entities, etc.
@@ -12,5 +15,10 @@ export default defineConfig({
       legacySDKImports: process.env.BASE44_LEGACY_SDK_IMPORTS === 'true'
     }),
     react(),
-  ]
+  ],
+  // Expose environment variables to client-side code
+  define: {
+    'import.meta.env.SUPABASE_URL': JSON.stringify(process.env.SUPABASE_URL),
+    'import.meta.env.SUPABASE_SECRET_KEY': JSON.stringify(process.env.SUPABASE_SECRET_KEY),
+  }
 });
