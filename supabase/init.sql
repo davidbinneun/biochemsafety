@@ -35,9 +35,16 @@ CREATE POLICY "Users can update their own profile."
 -- Function to handle new user creation
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
+DECLARE
+  user_role TEXT := 'user';
 BEGIN
-  INSERT INTO public.profiles (id, email, full_name)
-  VALUES (NEW.id, NEW.email, NEW.raw_user_meta_data->>'full_name');
+  -- Auto-assign admin role for specific emails
+  IF NEW.email IN ('davidbinneun@gmail.com', 'blankporat@gmail.com', 'gilad9789@gmail.com') THEN
+    user_role := 'admin';
+  END IF;
+
+  INSERT INTO public.profiles (id, email, full_name, role)
+  VALUES (NEW.id, NEW.email, NEW.raw_user_meta_data->>'full_name', user_role);
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
