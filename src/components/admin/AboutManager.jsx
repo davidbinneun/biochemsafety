@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
+import { getContentBlocks, createContentBlock, updateContentBlock } from '@/lib/supabaseClient';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Save, Plus, Trash2, GraduationCap, Briefcase, Award, Building2, Loader2, Check } from 'lucide-react';
+import { Save, Plus, Trash2, GraduationCap, Briefcase, Award, Building2, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import RichTextEditor from './RichTextEditor';
 
@@ -13,7 +13,7 @@ export default function AboutManager() {
 
   const { data: aboutContent = [] } = useQuery({
     queryKey: ['contentBlocks', 'about'],
-    queryFn: () => base44.entities.ContentBlock.filter({ page: 'about' }),
+    queryFn: () => getContentBlocks({ page: 'about' }),
   });
 
   // Company Info
@@ -135,9 +135,9 @@ export default function AboutManager() {
     mutationFn: async ({ section, content }) => {
       const existing = aboutContent.find(c => c.section === section);
       if (existing) {
-        return base44.entities.ContentBlock.update(existing.id, { content: JSON.stringify(content) });
+        return updateContentBlock(existing.id, { content: JSON.stringify(content) });
       } else {
-        return base44.entities.ContentBlock.create({
+        return createContentBlock({
           page: 'about',
           section,
           title: section,
@@ -146,7 +146,7 @@ export default function AboutManager() {
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(['contentBlocks', 'about']);
+      queryClient.invalidateQueries({ queryKey: ['contentBlocks', 'about'] });
       toast.success('נשמר בהצלחה');
     },
   });

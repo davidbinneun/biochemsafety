@@ -1,6 +1,7 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
+import { useAuth } from '@/lib/AuthContext';
+import { getUserProfile } from '@/lib/supabaseClient';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '../utils';
 import { Button } from "@/components/ui/button";
@@ -8,12 +9,15 @@ import { ArrowRight, Eye } from 'lucide-react';
 import AboutManager from '../components/admin/AboutManager';
 
 export default function EditAbout() {
-  const { data: user, isLoading: userLoading } = useQuery({
-    queryKey: ['currentUser'],
-    queryFn: () => base44.auth.me(),
+  const { user, isLoadingAuth } = useAuth();
+
+  const { data: profile, isLoading: profileLoading } = useQuery({
+    queryKey: ['userProfile', user?.id],
+    queryFn: () => getUserProfile(user.id),
+    enabled: !!user?.id,
   });
 
-  if (userLoading) {
+  if (isLoadingAuth || profileLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <p className="text-gray-600">טוען...</p>
@@ -21,7 +25,7 @@ export default function EditAbout() {
     );
   }
 
-  if (!user || user.role !== 'admin') {
+  if (!profile || profile.role !== 'admin') {
     return (
       <div className="min-h-screen flex items-center justify-center py-20 px-4">
         <div className="text-center">

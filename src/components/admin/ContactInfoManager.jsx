@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { getContentBlocks, createContentBlock, updateContentBlock } from '@/lib/supabaseClient';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -20,7 +20,7 @@ export default function ContactInfoManager() {
 
   const { data: contactInfo = [], isLoading } = useQuery({
     queryKey: ['contentBlocks', 'global', 'contact-info'],
-    queryFn: () => base44.entities.ContentBlock.filter({ page: 'global', section: 'contact-info' }),
+    queryFn: () => getContentBlocks({ page: 'global', section: 'contact-info' }),
   });
 
   useEffect(() => {
@@ -33,36 +33,32 @@ export default function ContactInfoManager() {
     }
   }, [contactInfo]);
 
-  const createMutation = useMutation({
-    mutationFn: (data) => base44.entities.ContentBlock.create(data),
-    onSuccess: () => queryClient.invalidateQueries(['contentBlocks', 'global', 'contact-info']),
-  });
-
-  const updateMutation = useMutation({
-    mutationFn: ({ id, data }) => base44.entities.ContentBlock.update(id, data),
-    onSuccess: () => queryClient.invalidateQueries(['contentBlocks', 'global', 'contact-info']),
-  });
-
   const handleSave = async () => {
     setIsSaving(true);
-    
-    for (const field of contactFields) {
-      const value = form[field.key]?.content || '';
-      const existingId = form[field.key]?.id;
 
-      if (existingId) {
-        await updateMutation.mutateAsync({ id: existingId, data: { content: value } });
-      } else if (value) {
-        await createMutation.mutateAsync({
-          page: 'global',
-          section: 'contact-info',
-          title: field.key,
-          content: value,
-        });
+    try {
+      for (const field of contactFields) {
+        const value = form[field.key]?.content || '';
+        const existingId = form[field.key]?.id;
+
+        if (existingId) {
+          await updateContentBlock(existingId, { content: value });
+        } else if (value) {
+          await createContentBlock({
+            page: 'global',
+            section: 'contact-info',
+            title: field.key,
+            content: value,
+          });
+        }
       }
-    }
 
-    setIsSaving(false);
+      queryClient.invalidateQueries({ queryKey: ['contentBlocks', 'global', 'contact-info'] });
+    } catch (error) {
+      console.error('Save contact info error:', error);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   if (isLoading) {

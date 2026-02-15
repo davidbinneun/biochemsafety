@@ -1,6 +1,13 @@
 import React, { useState } from 'react';
-import { base44 } from '@/api/base44Client';
+import { useAuth } from '@/lib/AuthContext';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import {
+  getAllContentBlocks,
+  createContentBlock,
+  updateContentBlock,
+  deleteContentBlock,
+  getUserProfile
+} from '@/lib/supabaseClient';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -10,6 +17,7 @@ import { Pencil, Save, X, Plus, Trash2 } from 'lucide-react';
 import ServicesManager from '../components/admin/ServicesManager';
 import ContactInfoManager from '../components/admin/ContactInfoManager';
 import AboutManager from '../components/admin/AboutManager';
+import { signInWithGoogle } from '@/lib/supabaseClient';
 
 export default function Admin() {
   const [editingId, setEditingId] = useState(null);
@@ -24,38 +32,33 @@ export default function Admin() {
   });
 
   const queryClient = useQueryClient();
+  const { user, isAuthenticated, isLoadingAuth } = useAuth();
 
-  const { data: user, isLoading: isLoadingUser } = useQuery({
-    queryKey: ['currentUser'],
-    queryFn: async () => {
-      const isAuth = await base44.auth.isAuthenticated();
-      if (!isAuth) {
-        base44.auth.redirectToLogin(window.location.pathname);
-        return null;
-      }
-      return await base44.auth.me();
-    },
+  const { data: profile, isLoading: isLoadingProfile } = useQuery({
+    queryKey: ['userProfile', user?.id],
+    queryFn: () => getUserProfile(user.id),
+    enabled: !!user?.id,
   });
 
   const { data: contents = [], isLoading } = useQuery({
     queryKey: ['contentBlocks'],
-    queryFn: () => base44.entities.ContentBlock.list(),
-    enabled: !!user && user.role === 'admin',
+    queryFn: () => getAllContentBlocks(),
+    enabled: !!profile && profile.role === 'admin',
   });
 
   const updateMutation = useMutation({
-    mutationFn: ({ id, data }) => base44.entities.ContentBlock.update(id, data),
+    mutationFn: ({ id, data }) => updateContentBlock(id, data),
     onSuccess: () => {
-      queryClient.invalidateQueries(['contentBlocks']);
+      queryClient.invalidateQueries({ queryKey: ['contentBlocks'] });
       setEditingId(null);
       setEditForm({});
     },
   });
 
   const createMutation = useMutation({
-    mutationFn: (data) => base44.entities.ContentBlock.create(data),
+    mutationFn: (data) => createContentBlock(data),
     onSuccess: () => {
-      queryClient.invalidateQueries(['contentBlocks']);
+      queryClient.invalidateQueries({ queryKey: ['contentBlocks'] });
       setShowAddForm(false);
       setNewContent({
         page: 'home',
@@ -68,13 +71,13 @@ export default function Admin() {
   });
 
   const deleteMutation = useMutation({
-    mutationFn: (id) => base44.entities.ContentBlock.delete(id),
+    mutationFn: (id) => deleteContentBlock(id),
     onSuccess: () => {
-      queryClient.invalidateQueries(['contentBlocks']);
+      queryClient.invalidateQueries({ queryKey: ['contentBlocks'] });
     },
   });
 
-  if (isLoadingUser) {
+  if (isLoadingAuth || isLoadingProfile) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <Card className="w-96">
@@ -86,7 +89,22 @@ export default function Admin() {
     );
   }
 
-  if (!user || user.role !== 'admin') {
+  if (!isAuthenticated || !user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <Card className="w-96">
+          <CardContent className="pt-6 text-center space-y-4">
+            <p className="text-gray-600">יש להתחבר כדי לגשת לפאנל הניהול</p>
+            <Button onClick={signInWithGoogle} className="bg-[#8B1538] hover:bg-[#6B1028]">
+              התחבר עם Google
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (!profile || profile.role !== 'admin') {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <Card className="w-96">

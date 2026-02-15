@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
+import { getServices, createService, updateService, deleteService } from '@/lib/supabaseClient';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Plus, Pencil, GripVertical } from 'lucide-react';
+import { Plus, Pencil } from 'lucide-react';
 import ServiceEditor from './ServiceEditor';
 
 export default function ServicesManager() {
@@ -13,29 +13,29 @@ export default function ServicesManager() {
 
   const { data: services = [], isLoading } = useQuery({
     queryKey: ['services'],
-    queryFn: () => base44.entities.Service.list('order'),
+    queryFn: () => getServices('order'),
   });
 
   const createMutation = useMutation({
-    mutationFn: (data) => base44.entities.Service.create(data),
+    mutationFn: (data) => createService(data),
     onSuccess: () => {
-      queryClient.invalidateQueries(['services']);
+      queryClient.invalidateQueries({ queryKey: ['services'] });
       setShowNew(false);
     },
   });
 
   const updateMutation = useMutation({
-    mutationFn: ({ id, data }) => base44.entities.Service.update(id, data),
+    mutationFn: ({ id, data }) => updateService(id, data),
     onSuccess: () => {
-      queryClient.invalidateQueries(['services']);
+      queryClient.invalidateQueries({ queryKey: ['services'] });
       setEditingService(null);
     },
   });
 
   const deleteMutation = useMutation({
-    mutationFn: (id) => base44.entities.Service.delete(id),
+    mutationFn: (id) => deleteService(id),
     onSuccess: () => {
-      queryClient.invalidateQueries(['services']);
+      queryClient.invalidateQueries({ queryKey: ['services'] });
       setEditingService(null);
     },
   });
@@ -101,7 +101,7 @@ export default function ServicesManager() {
                         <Pencil className="w-4 h-4" />
                       </Button>
                     </div>
-                    
+
                     <div className="w-12 h-12 bg-[#8B1538] bg-opacity-10 rounded-lg flex items-center justify-center flex-shrink-0">
                       {service.icon_url ? (
                         <img src={service.icon_url} alt={service.title} className="w-8 h-8 object-contain" />

@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Save, X, Upload, Trash2 } from 'lucide-react';
-import { base44 } from '@/api/base44Client';
+import { uploadFile } from '@/lib/supabaseClient';
 import RichTextEditor from './RichTextEditor';
 
 export default function ServiceEditor({ service, onSave, onCancel, onDelete }) {
@@ -28,9 +28,10 @@ export default function ServiceEditor({ service, onSave, onCancel, onDelete }) {
 
     setUploading(true);
     try {
-      const { file_url } = await base44.integrations.Core.UploadFile({ file });
-      setForm({ ...form, icon_url: file_url });
+      const fileUrl = await uploadFile(file);
+      setForm({ ...form, icon_url: fileUrl });
     } catch (error) {
+      console.error('Icon upload error:', error);
       alert('שגיאה בהעלאת תמונה');
     } finally {
       setUploading(false);
@@ -43,9 +44,10 @@ export default function ServiceEditor({ service, onSave, onCancel, onDelete }) {
 
     setUploadingImage(true);
     try {
-      const { file_url } = await base44.integrations.Core.UploadFile({ file });
-      setForm({ ...form, image_url: file_url });
+      const fileUrl = await uploadFile(file);
+      setForm({ ...form, image_url: fileUrl });
     } catch (error) {
+      console.error('Image upload error:', error);
       alert('שגיאה בהעלאת תמונה');
     } finally {
       setUploadingImage(false);

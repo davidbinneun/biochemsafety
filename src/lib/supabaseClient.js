@@ -81,3 +81,112 @@ export const getContentBlocks = async (filters = {}) => {
   if (error) throw error
   return data
 }
+
+// Profile helpers
+export const getUserProfile = async (userId) => {
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', userId)
+    .single()
+
+  if (error) throw error
+  return data
+}
+
+// Services CRUD
+export const createService = async (serviceData) => {
+  const { data, error } = await supabase
+    .from('services')
+    .insert(serviceData)
+    .select()
+    .single()
+
+  if (error) throw error
+  return data
+}
+
+export const updateService = async (id, serviceData) => {
+  const { data, error } = await supabase
+    .from('services')
+    .update(serviceData)
+    .eq('id', id)
+    .select()
+    .single()
+
+  if (error) throw error
+  return data
+}
+
+export const deleteService = async (id) => {
+  const { error } = await supabase
+    .from('services')
+    .delete()
+    .eq('id', id)
+
+  if (error) throw error
+}
+
+// Content Blocks CRUD
+export const getAllContentBlocks = async () => {
+  const { data, error } = await supabase
+    .from('content_blocks')
+    .select('*')
+    .order('order')
+
+  if (error) throw error
+  return data
+}
+
+export const createContentBlock = async (blockData) => {
+  const { data, error } = await supabase
+    .from('content_blocks')
+    .insert(blockData)
+    .select()
+    .single()
+
+  if (error) throw error
+  return data
+}
+
+export const updateContentBlock = async (id, blockData) => {
+  const { data, error } = await supabase
+    .from('content_blocks')
+    .update(blockData)
+    .eq('id', id)
+    .select()
+    .single()
+
+  if (error) throw error
+  return data
+}
+
+export const deleteContentBlock = async (id) => {
+  const { error } = await supabase
+    .from('content_blocks')
+    .delete()
+    .eq('id', id)
+
+  if (error) throw error
+}
+
+// File upload to Supabase Storage
+const STORAGE_BUCKET = 'biochemsafety'
+
+export const uploadFile = async (file) => {
+  const fileExt = file.name.split('.').pop()
+  const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`
+  const filePath = `uploads/${fileName}`
+
+  const { error } = await supabase.storage
+    .from(STORAGE_BUCKET)
+    .upload(filePath, file)
+
+  if (error) throw error
+
+  const { data: urlData } = supabase.storage
+    .from(STORAGE_BUCKET)
+    .getPublicUrl(filePath)
+
+  return urlData.publicUrl
+}

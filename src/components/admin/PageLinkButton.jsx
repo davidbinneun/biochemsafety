@@ -5,7 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogClose } from "@/components/ui/dialog";
 import { Link2 } from 'lucide-react';
 import { createPageUrl } from '../../utils';
-import { base44 } from '@/api/base44Client';
+import { getServices } from '@/lib/supabaseClient';
 import { useQuery } from '@tanstack/react-query';
 
 const STATIC_PAGES = [
@@ -22,7 +22,7 @@ export default function PageLinkButton({ onInsertLink }) {
 
   const { data: services = [] } = useQuery({
     queryKey: ['services-for-links'],
-    queryFn: () => base44.entities.Service.list('order'),
+    queryFn: () => getServices('order'),
   });
 
   const handleInsert = () => {
