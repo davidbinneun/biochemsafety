@@ -6,7 +6,7 @@ import VisualEditAgent from '@/lib/VisualEditAgent'
 import NavigationTracker from '@/lib/NavigationTracker'
 import { pagesConfig } from './pages.config'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import PageNotFound from './lib/PageNotFound';
+import { Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import AuthCallback from '@/pages/AuthCallback';
@@ -62,7 +62,7 @@ const AuthenticatedApp = () => {
         />
       ))}
       <Route path="/auth/callback" element={<AuthCallback />} />
-      <Route path="*" element={<PageNotFound />} />
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 };
