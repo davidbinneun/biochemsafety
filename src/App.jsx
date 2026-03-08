@@ -62,6 +62,7 @@ const AuthenticatedApp = () => {
         />
       ))}
       <Route path="/auth/callback" element={<AuthCallback />} />
+      <Route path="/admin" element={<Navigate to="/Admin" replace />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
