@@ -1,13 +1,23 @@
 import React from 'react';
 import { Link } from "react-router-dom";
 import { createPageUrl } from "./utils";
-import { Menu, X, Phone, Mail, MessageCircle } from 'lucide-react';
+import { Menu, X, Phone, Mail, MessageCircle, Settings } from 'lucide-react';
 import { Button } from "@/components/ui/button";
-import { getContentBlocks } from "@/lib/supabaseClient";
+import { getContentBlocks, getUserProfile } from "@/lib/supabaseClient";
 import { useQuery } from "@tanstack/react-query";
+import { useAuth } from '@/lib/AuthContext';
 
 export default function Layout({ children, currentPageName }) {
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
+  const { user } = useAuth();
+
+  const { data: profile } = useQuery({
+    queryKey: ['userProfile', user?.id],
+    queryFn: () => getUserProfile(user.id),
+    enabled: !!user?.id,
+  });
+
+  const isAdmin = profile?.role === 'admin';
 
   React.useEffect(() => {
     // Check if already loaded
@@ -142,6 +152,21 @@ export default function Layout({ children, currentPageName }) {
                   </Button>
                 </Link>
               ))}
+              {isAdmin && (
+                <Link to="/Admin">
+                  <Button
+                    variant="ghost"
+                    className={`${
+                      currentPageName === 'Admin'
+                        ? 'text-[#8c2b60] bg-[#8c2b60]/10'
+                        : 'text-gray-700 hover:text-[#8c2b60] hover:bg-[#8c2b60]/5'
+                    }`}
+                  >
+                    <Settings className="w-4 h-4 ml-1" />
+                    ניהול אדמין
+                  </Button>
+                </Link>
+              )}
             </nav>
 
             {/* Contact Info & Mobile Menu */}
@@ -180,6 +205,22 @@ export default function Layout({ children, currentPageName }) {
                     </Button>
                   </Link>
                 ))}
+
+                {isAdmin && (
+                  <Link to="/Admin" onClick={() => setMobileMenuOpen(false)}>
+                    <Button
+                      variant="ghost"
+                      className={`w-full justify-end ${
+                        currentPageName === 'Admin'
+                          ? 'text-[#8c2b60] bg-[#8c2b60]/10'
+                          : 'text-gray-700'
+                      }`}
+                    >
+                      <Settings className="w-4 h-4 ml-1" />
+                      ניהול אדמין
+                    </Button>
+                  </Link>
+                )}
 
                 <div className="pt-4 border-t border-gray-200 mt-2">
                   <a href={`tel:${phone}`}>
