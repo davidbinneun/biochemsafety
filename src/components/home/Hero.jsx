@@ -1,5 +1,5 @@
 import React from 'react';
-import { Phone, Mail, Linkedin } from 'lucide-react';
+
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "../../utils";
@@ -12,24 +12,10 @@ export default function Hero() {
     queryFn: () => getContentBlocks({ page: 'home', section: 'hero' }),
   });
 
-  const { data: contactInfo = [] } = useQuery({
-    queryKey: ['contentBlocks', 'global', 'contact-info'],
-    queryFn: () => getContentBlocks({ page: 'global', section: 'contact-info' }),
-  });
-
   const getContent = (title) => {
     const item = heroContent.find(c => c.title === title);
     return item?.content || '';
   };
-
-  const getContactInfo = (key, fallback) => {
-    const item = contactInfo.find(c => c.title === key);
-    return item?.content || fallback;
-  };
-
-  const phone = getContactInfo('phone', '053-735-8888');
-  const email = getContactInfo('email', 'blankporat@gmail.com');
-  const linkedin = getContactInfo('linkedin', 'https://www.linkedin.com/in/dr-diana-blank-porat-896645111/');
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 py-20 bg-white">
@@ -63,17 +49,6 @@ export default function Hero() {
             </Link>
           </div>
 
-          <div className="flex gap-4 justify-center md:justify-end mt-6">
-            <a href={`tel:${phone}`} className="text-gray-600 hover:text-[#8B1538] transition-colors">
-              <Phone className="w-5 h-5" />
-            </a>
-            <a href={`mailto:${email}`} className="text-gray-600 hover:text-[#8B1538] transition-colors">
-              <Mail className="w-5 h-5" />
-            </a>
-            <a href={linkedin} target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-[#8B1538] transition-colors">
-              <Linkedin className="w-5 h-5" />
-            </a>
-          </div>
         </div>
 
         {/* Image */}

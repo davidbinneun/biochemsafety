@@ -10,13 +10,14 @@ import {
 } from '@/lib/supabaseClient';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Pencil, Save, X, Plus, Trash2 } from 'lucide-react';
 import ServicesManager from '../components/admin/ServicesManager';
 import ContactInfoManager from '../components/admin/ContactInfoManager';
 import AboutManager from '../components/admin/AboutManager';
+import RichTextEditor from '../components/admin/RichTextEditor';
 import { signInWithGoogle } from '@/lib/supabaseClient';
 
 export default function Admin() {
@@ -173,11 +174,10 @@ export default function Admin() {
               placeholder="כותרת"
               className="text-right"
             />
-            <Textarea
+            <RichTextEditor
               value={editForm.content}
-              onChange={(e) => setEditForm({...editForm, content: e.target.value})}
-              rows={4}
-              className="text-right"
+              onChange={(value) => setEditForm({...editForm, content: value})}
+              toolbarOptions="full"
             />
             <div className="flex gap-2 justify-end">
               <Button onClick={handleSave} size="sm" className="bg-[#8B1538] hover:bg-[#6B1028]">
@@ -203,7 +203,7 @@ export default function Admin() {
               </div>
               <div className="flex-1 text-right">
                 <h4 className="font-semibold text-lg text-gray-900">{content.title}</h4>
-                <p className="text-gray-600 mt-2 whitespace-pre-line">{content.content}</p>
+                <div className="text-gray-600 mt-2 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: content.content }} />
               </div>
             </div>
           </div>
@@ -282,11 +282,10 @@ export default function Admin() {
                       </div>
                       <div>
                         <label className="block text-sm font-medium mb-2">תוכן</label>
-                        <Textarea
+                        <RichTextEditor
                           value={newContent.content}
-                          onChange={(e) => setNewContent({...newContent, content: e.target.value})}
-                          rows={4}
-                          className="text-right"
+                          onChange={(value) => setNewContent({...newContent, content: value})}
+                          toolbarOptions="full"
                         />
                       </div>
                       <div>
