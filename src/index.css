@@ -156,3 +156,59 @@ button:focus-visible {
     @apply bg-background text-foreground;
   }
 }
+
+/* Quill editor font size labels */
+.ql-snow .ql-picker.ql-size .ql-picker-label::before,
+.ql-snow .ql-picker.ql-size .ql-picker-item::before {
+  content: 'גודל';
+}
+.ql-snow .ql-picker.ql-size .ql-picker-label[data-value="12px"]::before,
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="12px"]::before { content: '12px'; }
+.ql-snow .ql-picker.ql-size .ql-picker-label[data-value="14px"]::before,
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="14px"]::before { content: '14px'; }
+.ql-snow .ql-picker.ql-size .ql-picker-label[data-value="16px"]::before,
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="16px"]::before { content: '16px'; }
+.ql-snow .ql-picker.ql-size .ql-picker-label[data-value="18px"]::before,
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="18px"]::before { content: '18px'; }
+.ql-snow .ql-picker.ql-size .ql-picker-label[data-value="20px"]::before,
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="20px"]::before { content: '20px'; }
+.ql-snow .ql-picker.ql-size .ql-picker-label[data-value="24px"]::before,
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="24px"]::before { content: '24px'; }
+.ql-snow .ql-picker.ql-size .ql-picker-label[data-value="28px"]::before,
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="28px"]::before { content: '28px'; }
+.ql-snow .ql-picker.ql-size .ql-picker-label[data-value="32px"]::before,
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="32px"]::before { content: '32px'; }
+.ql-snow .ql-picker.ql-size .ql-picker-label[data-value="36px"]::before,
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="36px"]::before { content: '36px'; }
+.ql-snow .ql-picker.ql-size .ql-picker-label[data-value="48px"]::before,
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="48px"]::before { content: '48px'; }
+
+/* Quill editor font family labels */
+.ql-snow .ql-picker.ql-font .ql-picker-label::before,
+.ql-snow .ql-picker.ql-font .ql-picker-item::before {
+  content: 'גופן';
+}
+.ql-snow .ql-picker.ql-font .ql-picker-label[data-value="Arial"]::before,
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value="Arial"]::before { content: 'Arial'; font-family: Arial; }
+.ql-snow .ql-picker.ql-font .ql-picker-label[data-value="David"]::before,
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value="David"]::before { content: 'David'; font-family: David; }
+.ql-snow .ql-picker.ql-font .ql-picker-label[data-value="Tahoma"]::before,
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value="Tahoma"]::before { content: 'Tahoma'; font-family: Tahoma; }
+.ql-snow .ql-picker.ql-font .ql-picker-label[data-value="Verdana"]::before,
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value="Verdana"]::before { content: 'Verdana'; font-family: Verdana; }
+.ql-snow .ql-picker.ql-font .ql-picker-label[data-value="Georgia"]::before,
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value="Georgia"]::before { content: 'Georgia'; font-family: Georgia; }
+.ql-snow .ql-picker.ql-font .ql-picker-label[data-value="Times New Roman"]::before,
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value="Times New Roman"]::before { content: 'Times New Roman'; font-family: 'Times New Roman'; }
+.ql-snow .ql-picker.ql-font .ql-picker-label[data-value="Courier New"]::before,
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value="Courier New"]::before { content: 'Courier New'; font-family: 'Courier New'; }
+.ql-snow .ql-picker.ql-font .ql-picker-label[data-value="Rubik"]::before,
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value="Rubik"]::before { content: 'Rubik'; font-family: Rubik; }
+.ql-snow .ql-picker.ql-font .ql-picker-label[data-value="Heebo"]::before,
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value="Heebo"]::before { content: 'Heebo'; font-family: Heebo; }
+.ql-snow .ql-picker.ql-font .ql-picker-label[data-value="Assistant"]::before,
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value="Assistant"]::before { content: 'Assistant'; font-family: Assistant; }
+
+/* Make font/size dropdowns wider for readability */
+.ql-snow .ql-picker.ql-font { width: 130px; }
+.ql-snow .ql-picker.ql-size { width: 80px; }

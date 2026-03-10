@@ -1,11 +1,21 @@
 import React, { useRef, useState } from 'react';
-import ReactQuill from 'react-quill';
+import ReactQuill, { Quill } from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import PageLinkButton from './PageLinkButton';
 
-export default function RichTextEditor({ 
-  value, 
-  onChange, 
+// Register custom font sizes
+const Size = Quill.import('attributors/style/size');
+Size.whitelist = ['12px', '14px', '16px', '18px', '20px', '24px', '28px', '32px', '36px', '48px'];
+Quill.register(Size, true);
+
+// Register font families using inline styles
+const Font = Quill.import('attributors/style/font');
+Font.whitelist = ['Arial', 'David', 'Tahoma', 'Verdana', 'Georgia', 'Times New Roman', 'Courier New', 'Rubik', 'Heebo', 'Assistant'];
+Quill.register(Font, true);
+
+export default function RichTextEditor({
+  value,
+  onChange,
   placeholder = '',
   toolbarOptions = 'full' // 'full', 'simple', 'minimal'
 }) {
@@ -30,6 +40,7 @@ export default function RichTextEditor({
       default:
         return [
           [{ 'header': [1, 2, 3, false] }],
+          [{ 'font': Font.whitelist }, { 'size': Size.whitelist }],
           ['bold', 'italic', 'underline'],
           [{ 'color': [] }, { 'background': [] }],
           [{ 'list': 'ordered'}, { 'list': 'bullet' }],
