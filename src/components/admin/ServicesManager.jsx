@@ -112,7 +112,7 @@ export default function ServicesManager() {
 
                     <div className="flex-1 text-right">
                       <h3 className="font-semibold text-gray-900">{service.title}</h3>
-                      <p className="text-sm text-gray-500 line-clamp-1">{service.short_description}</p>
+                      <p className="text-sm text-gray-500 line-clamp-1">{service.short_description?.replace(/<[^>]*>/g, '')}</p>
                     </div>
 
                     <div className="text-sm text-gray-400">

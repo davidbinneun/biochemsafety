@@ -30,10 +30,10 @@ export default function Hero() {
           </h2>
           
           <div className="space-y-2 text-lg mb-8">
-            <p className="font-semibold text-gray-800">{getContent('תפקיד 1')}</p>
-            <p className="text-gray-700">{getContent('תפקיד 2')}</p>
-            <p className="text-gray-700">{getContent('תפקיד 3')}</p>
-            <p className="font-bold text-[#8B1538]">{getContent('תפקיד 4')}</p>
+            <div className="font-semibold text-gray-800" dangerouslySetInnerHTML={{ __html: getContent('תפקיד 1') }} />
+            <div className="text-gray-700" dangerouslySetInnerHTML={{ __html: getContent('תפקיד 2') }} />
+            <div className="text-gray-700" dangerouslySetInnerHTML={{ __html: getContent('תפקיד 3') }} />
+            <div className="font-bold text-[#8B1538]" dangerouslySetInnerHTML={{ __html: getContent('תפקיד 4') }} />
           </div>
 
           <div className="flex flex-wrap gap-4 justify-center md:justify-end">
