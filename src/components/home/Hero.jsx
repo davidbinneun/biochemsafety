@@ -21,19 +21,15 @@ export default function Hero() {
     <div className="min-h-screen flex items-center justify-center px-4 py-20 bg-white">
       <div className="max-w-6xl w-full grid md:grid-cols-2 gap-12 items-center">
         {/* Text Content */}
-        <div className="text-center md:text-right order-1 md:order-1">
-          <h1 className="text-3xl md:text-4xl font-normal mb-4 text-gray-900">
-            {getContent('שם מלא')}
-          </h1>
-          <h2 className="text-2xl md:text-3xl mb-6 text-[#8B1538]">
-            {getContent('שם חברה')}
-          </h2>
-          
-          <div className="space-y-2 text-lg mb-8">
-            <div className="font-semibold text-gray-800" dangerouslySetInnerHTML={{ __html: getContent('תפקיד 1') }} />
-            <div className="text-gray-700" dangerouslySetInnerHTML={{ __html: getContent('תפקיד 2') }} />
-            <div className="text-gray-700" dangerouslySetInnerHTML={{ __html: getContent('תפקיד 3') }} />
-            <div className="font-bold text-[#8B1538]" dangerouslySetInnerHTML={{ __html: getContent('תפקיד 4') }} />
+        <div className="text-center md:text-right order-1 md:order-1 prose prose-lg max-w-none [&_h1]:text-4xl [&_h2]:text-3xl [&_h3]:text-2xl [&_p]:my-1">
+          <div className="mb-4" dangerouslySetInnerHTML={{ __html: getContent('שם מלא') }} />
+          <div className="mb-6" dangerouslySetInnerHTML={{ __html: getContent('שם חברה') }} />
+
+          <div className="space-y-2 mb-8">
+            <div dangerouslySetInnerHTML={{ __html: getContent('תפקיד 1') }} />
+            <div dangerouslySetInnerHTML={{ __html: getContent('תפקיד 2') }} />
+            <div dangerouslySetInnerHTML={{ __html: getContent('תפקיד 3') }} />
+            <div dangerouslySetInnerHTML={{ __html: getContent('תפקיד 4') }} />
           </div>
 
           <div className="flex flex-wrap gap-4 justify-center md:justify-end">
