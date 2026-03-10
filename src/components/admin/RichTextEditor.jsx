@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import ReactQuill, { Quill } from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import PageLinkButton from './PageLinkButton';
@@ -13,6 +13,30 @@ const Font = Quill.import('attributors/style/font');
 Font.whitelist = ['Arial', 'David', 'Tahoma', 'Verdana', 'Georgia', 'Times New Roman', 'Courier New', 'Rubik', 'Heebo', 'Assistant'];
 Quill.register(Font, true);
 
+// Helper to open a native color picker and apply the chosen color
+function openNativeColorPicker(quill, format) {
+  const input = document.createElement('input');
+  input.type = 'color';
+  input.style.position = 'absolute';
+  input.style.opacity = '0';
+  input.style.pointerEvents = 'none';
+  // Pre-fill with current color if any
+  const current = quill.getFormat()[format];
+  if (current && current !== true) input.value = current;
+  document.body.appendChild(input);
+  input.addEventListener('input', (e) => {
+    quill.format(format, /** @type {HTMLInputElement} */ (e.target).value);
+  });
+  input.addEventListener('change', () => {
+    document.body.removeChild(input);
+  });
+  // Also clean up if user cancels (blur without change)
+  input.addEventListener('blur', () => {
+    if (document.body.contains(input)) document.body.removeChild(input);
+  });
+  input.click();
+}
+
 export default function RichTextEditor({
   value,
   onChange,
@@ -20,7 +44,6 @@ export default function RichTextEditor({
   toolbarOptions = 'full' // 'full', 'simple', 'minimal'
 }) {
   const quillRef = useRef(null);
-  const [showLinkDialog, setShowLinkDialog] = useState(false);
 
   const getToolbarConfig = () => {
     switch (toolbarOptions) {
@@ -46,10 +69,25 @@ export default function RichTextEditor({
           [{ 'list': 'ordered'}, { 'list': 'bullet' }],
           [{ 'align': [] }],
           ['link'],
+          ['custom-color', 'custom-background'],
           ['clean']
         ];
     }
   };
+
+  const modules = useRef({
+    toolbar: {
+      container: getToolbarConfig(),
+      handlers: {
+        'custom-color': function () {
+          openNativeColorPicker(this.quill, 'color');
+        },
+        'custom-background': function () {
+          openNativeColorPicker(this.quill, 'background');
+        }
+      }
+    }
+  }).current;
 
   const handleInsertLink = (text, url) => {
     const quill = quillRef.current?.getEditor();
@@ -68,12 +106,27 @@ export default function RichTextEditor({
 
   return (
     <div className="rich-text-editor-wrapper">
+      <style>{`
+        .ql-custom-color, .ql-custom-background {
+          width: auto !important;
+          padding: 0 5px !important;
+          font-size: 11px !important;
+          display: inline-flex !important;
+          align-items: center !important;
+        }
+        .ql-custom-color::after {
+          content: '🎨 צבע';
+        }
+        .ql-custom-background::after {
+          content: '🎨 רקע';
+        }
+      `}</style>
       <div className="flex items-center gap-2 mb-2">
         <PageLinkButton onInsertLink={handleInsertLink} />
         <span className="text-xs text-gray-500">הוסף קישור לעמוד באתר</span>
       </div>
-      <div 
-        className="bg-white rounded-lg border overflow-hidden [&_.ql-editor_ul]:list-disc [&_.ql-editor_ul]:pr-8 [&_.ql-editor_ol]:list-decimal [&_.ql-editor_ol]:pr-8 [&_.ql-editor_li]:pr-2" 
+      <div
+        className="bg-white rounded-lg border overflow-hidden [&_.ql-editor_ul]:list-disc [&_.ql-editor_ul]:pr-8 [&_.ql-editor_ol]:list-decimal [&_.ql-editor_ol]:pr-8 [&_.ql-editor_li]:pr-2"
         dir="rtl"
       >
         <ReactQuill
@@ -82,9 +135,7 @@ export default function RichTextEditor({
           value={value || ''}
           onChange={onChange}
           placeholder={placeholder}
-          modules={{
-            toolbar: getToolbarConfig()
-          }}
+          modules={modules}
           className="[&_.ql-container]:h-auto [&_.ql-container]:min-h-[150px] [&_.ql-editor]:min-h-[150px]"
         />
       </div>
