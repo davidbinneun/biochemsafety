@@ -59,6 +59,16 @@ export default function About() {
   const professionalism = Array.isArray(professionalismRaw) ? professionalismRaw : null;
   const professionalismHtml = typeof professionalismRaw === 'string' ? professionalismRaw : null;
 
+  const getRawContent = (section, fallback) => {
+    const item = aboutContent.find(c => c.section === section);
+    return item?.content || fallback;
+  };
+
+  const fieldsTitle = getRawContent('fields-title', 'תחומי עיסוק');
+  const servicesTitle = getRawContent('services-title', 'השירותים שלנו');
+  const professionalismTitle = getRawContent('professionalism-title', 'מקצוענות היא העיקר');
+  const educationTitle = getRawContent('education-title', 'השכלה');
+
   const education = getContentData('education', [
     { degree: "PHD", field: "מדעי החיים. מחקר באונקולוגיה ופרמקולוגיה", institution: "אוניברסיטת בר-אילן" },
     { degree: "MPH", field: "בריאות סביבתית וגהות תעסוקתית", institution: "אוניברסיטת חיפה" },
@@ -71,23 +81,25 @@ export default function About() {
     <div className="min-h-screen py-20 px-4 bg-gradient-to-br from-gray-50 to-gray-100">
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-16">
-                        <h1 className="text-5xl font-bold mb-6 text-[#4e1635]">אודות</h1>
-                      </div>
+          {aboutContent.find(c => c.section === 'page-title')?.content ? (
+            <div className="prose prose-lg max-w-none [&_h1]:text-5xl [&_h1]:font-bold [&_h1]:mb-6 [&_h1]:text-[#4e1635]" dangerouslySetInnerHTML={{ __html: aboutContent.find(c => c.section === 'page-title').content }} />
+          ) : (
+            <h1 className="text-5xl font-bold mb-6 text-[#4e1635]">אודות</h1>
+          )}
+        </div>
 
         {/* About Company */}
         <div className="bg-white rounded-3xl shadow-xl p-8 md:p-12 mb-8 border border-gray-100">
           <div className="text-right">
-            <h2 className="text-3xl font-bold mb-6 text-[#8c2b60]">{companyData.name}</h2>
-            <p className="text-lg leading-relaxed mb-6 text-gray-700">
-              {companyData.founder}
-            </p>
+            <div className="text-3xl font-bold mb-6 text-[#8c2b60] prose max-w-none [&_p]:my-0 [&_*]:!text-[#8c2b60]" dangerouslySetInnerHTML={{ __html: companyData.name }} />
+            <div className="text-lg leading-relaxed mb-6 text-gray-700 prose max-w-none [&_p]:my-0" dangerouslySetInnerHTML={{ __html: companyData.founder }} />
 
-            <h3 className="text-2xl font-bold mb-4 text-[#4e1635]">תחומי עיסוק</h3>
+            <div className="text-2xl font-bold mb-4 text-[#4e1635] prose max-w-none [&_p]:my-0 [&_*]:!text-[#4e1635]" dangerouslySetInnerHTML={{ __html: fieldsTitle }} />
             <ul className="grid md:grid-cols-2 gap-3 mb-6">
               {companyData.fields.map((field, idx) => (
                 <li key={idx} className="flex items-start gap-3">
                   <CheckCircle className="w-5 h-5 text-[#8c2b60] mt-1 flex-shrink-0" />
-                  <span className="text-gray-700">{field}</span>
+                  <div className="text-gray-700 prose prose-sm max-w-none [&_p]:my-0" dangerouslySetInnerHTML={{ __html: field }} />
                 </li>
               ))}
             </ul>
@@ -98,7 +110,7 @@ export default function About() {
         <div className="bg-white rounded-3xl shadow-xl p-8 md:p-12 mb-8 border border-gray-100">
           <div className="flex items-center gap-3 mb-6">
             <Briefcase className="w-8 h-8 text-[#8c2b60]" />
-            <h2 className="text-3xl font-bold text-[#4e1635]">השירותים שלנו</h2>
+            <div className="text-3xl font-bold text-[#4e1635] prose max-w-none [&_p]:my-0 [&_*]:!text-[#4e1635]" dangerouslySetInnerHTML={{ __html: servicesTitle }} />
             </div>
             <div className="text-right">
             {servicesHtml ? (
@@ -123,7 +135,7 @@ export default function About() {
         <div className="bg-white rounded-3xl shadow-xl p-8 md:p-12 mb-8 border border-gray-100">
           <div className="flex items-center gap-3 mb-6">
             <Award className="w-8 h-8 text-[#8c2b60]" />
-            <h2 className="text-3xl font-bold text-[#4e1635]">מקצוענות היא העיקר</h2>
+            <div className="text-3xl font-bold text-[#4e1635] prose max-w-none [&_p]:my-0 [&_*]:!text-[#4e1635]" dangerouslySetInnerHTML={{ __html: professionalismTitle }} />
             </div>
             <div className="text-right">
             {professionalismHtml ? (
@@ -148,20 +160,20 @@ export default function About() {
         <div className="bg-white rounded-3xl shadow-xl p-8 md:p-12 border border-gray-100">
           <div className="flex items-center gap-3 mb-8">
             <GraduationCap className="w-8 h-8 text-[#8c2b60]" />
-            <h2 className="text-3xl font-bold text-[#4e1635]">השכלה</h2>
+            <div className="text-3xl font-bold text-[#4e1635] prose max-w-none [&_p]:my-0 [&_*]:!text-[#4e1635]" dangerouslySetInnerHTML={{ __html: educationTitle }} />
           </div>
           <div className="space-y-4 text-right">
             {education.map((edu, index) => (
               <div key={index} className="flex items-start gap-4">
                 <div className="w-16 h-16 bg-[#8c2b60] bg-opacity-10 rounded-xl flex items-center justify-center flex-shrink-0">
-                  <span className="text-[#8c2b60] font-bold text-lg">{edu.degree}</span>
+                  <div className="text-[#8c2b60] font-bold text-lg prose prose-sm max-w-none [&_p]:my-0 [&_*]:!text-[#8c2b60]" dangerouslySetInnerHTML={{ __html: edu.degree }} />
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-xl font-bold text-[#4e1635] mb-1">{edu.field}</h3>
-                  <p className="text-gray-600 flex items-center gap-2">
-                    <Building2 className="w-4 h-4" />
-                    {edu.institution}
-                  </p>
+                  <div className="text-xl font-bold text-[#4e1635] mb-1 prose max-w-none [&_p]:my-0 [&_*]:!text-[#4e1635]" dangerouslySetInnerHTML={{ __html: edu.field }} />
+                  <div className="text-gray-600 flex items-center gap-2">
+                    <Building2 className="w-4 h-4 flex-shrink-0" />
+                    <div className="prose prose-sm max-w-none [&_p]:my-0" dangerouslySetInnerHTML={{ __html: edu.institution }} />
+                  </div>
                 </div>
               </div>
             ))}

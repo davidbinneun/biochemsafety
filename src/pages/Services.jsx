@@ -1,6 +1,6 @@
 import React from 'react';
 import { Beaker } from 'lucide-react';
-import { getServices } from '@/lib/supabaseClient';
+import { getServices, getContentBlocks } from '@/lib/supabaseClient';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '../utils';
@@ -11,6 +11,19 @@ export default function Services() {
     queryKey: ['services'],
     queryFn: () => getServices('order'),
   });
+
+  const { data: pageContent = [] } = useQuery({
+    queryKey: ['contentBlocks', 'services-page'],
+    queryFn: () => getContentBlocks({ page: 'services-page' }),
+  });
+
+  const getPageContent = (section, fallback) => {
+    const item = pageContent.find(c => c.section === section);
+    return item?.content || fallback;
+  };
+
+  const pageTitle = getPageContent('page-title', 'תחומי התמחות');
+  const pageSubtitle = getPageContent('page-subtitle', 'שירותים מקצועיים לבטיחות ובריאות תעסוקתית');
 
   console.log('Services query:', { services, isLoading, error });
 
@@ -48,8 +61,8 @@ export default function Services() {
     <div className="min-h-screen py-20 px-4 bg-gradient-to-br from-gray-50 to-gray-100">
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-16">
-                    <h1 className="text-5xl font-bold mb-6 text-[#4e1635]">תחומי התמחות</h1>
-          <p className="text-xl text-gray-700">שירותים מקצועיים לבטיחות ובריאות תעסוקתית</p>
+          <div className="text-5xl font-bold mb-6 text-[#4e1635] prose max-w-none [&_p]:my-0 [&_*]:!text-[#4e1635]" dangerouslySetInnerHTML={{ __html: pageTitle }} />
+          <div className="text-xl text-gray-700 prose max-w-none [&_p]:my-0" dangerouslySetInnerHTML={{ __html: pageSubtitle }} />
         </div>
 
         <div className="space-y-8">
@@ -67,7 +80,7 @@ export default function Services() {
                   </div>
 
                   <div className="flex-1">
-                    <h2 className="text-2xl font-bold mb-4 text-[#4e1635]">{service.title}</h2>
+                    <div className="text-2xl font-bold mb-4 text-[#4e1635] prose max-w-none [&_p]:my-0 [&_*]:!text-[#4e1635] [&_h1]:text-2xl [&_h2]:text-2xl [&_h3]:text-2xl" dangerouslySetInnerHTML={{ __html: service.title }} />
                     <div 
                           className="text-[#4e1635] leading-relaxed mb-6 prose prose-sm max-w-none [&_*]:!text-[#4e1635]"
                           dangerouslySetInnerHTML={{ __html: service.short_description }}

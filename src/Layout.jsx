@@ -60,6 +60,11 @@ export default function Layout({ children, currentPageName }) {
     document.body.appendChild(script);
   }, []);
 
+  const { data: headerContent = [] } = useQuery({
+    queryKey: ['contentBlocks', 'layout', 'header'],
+    queryFn: () => getContentBlocks({ page: 'layout', section: 'header' }),
+  });
+
   const { data: footerContent = [] } = useQuery({
     queryKey: ['contentBlocks', 'layout', 'footer'],
     queryFn: () => getContentBlocks({ page: 'layout', section: 'footer' }),
@@ -83,9 +88,16 @@ export default function Layout({ children, currentPageName }) {
   const phone = getContactInfo('phone', '053-735-8888');
   const email = getContactInfo('email', 'blankporat@gmail.com');
 
-  const footerName = footerContent.find(c => c.title === 'שם מלא')?.content || 'ד"ר דיאנה בלנק-פורת';
-  const footerDesc = footerContent.find(c => c.title === 'תיאור')?.content || '';
-  const copyright = copyrightContent[0]?.content || '';
+  const stripHtml = (html) => {
+    if (!html) return '';
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    return doc.body.textContent || '';
+  };
+  const headerSubtitle = stripHtml(headerContent.find(c => c.title === 'תת כותרת')?.content) || 'BioChem Safety & Health';
+
+  const footerName = stripHtml(footerContent.find(c => c.title === 'שם מלא')?.content) || 'ד"ר דיאנה בלנק-פורת';
+  const footerDesc = stripHtml(footerContent.find(c => c.title === 'תיאור')?.content) || '';
+  const copyright = stripHtml(copyrightContent[0]?.content) || '';
 
   const navItems = [
     { name: 'דף הבית', page: 'Home' },
@@ -126,7 +138,7 @@ export default function Layout({ children, currentPageName }) {
               />
               <div className="hidden md:block text-right">
                 <div className="text-sm font-semibold text-gray-900">ד"ר דיאנה בלנק-פורת</div>
-                <div className="text-xs text-gray-600">BioChem Safety & Health</div>
+                <div className="text-xs text-gray-600">{headerSubtitle}</div>
               </div>
               <div className="hidden md:block w-px h-10 bg-black mx-2"></div>
               <img 

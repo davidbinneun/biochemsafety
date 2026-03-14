@@ -16,6 +16,15 @@ export default function AboutManager() {
     queryFn: () => getContentBlocks({ page: 'about' }),
   });
 
+  // Page Title
+  const [pageTitle, setPageTitle] = useState('');
+
+  // Section Titles
+  const [fieldsTitle, setFieldsTitle] = useState('תחומי עיסוק');
+  const [servicesTitle, setServicesTitle] = useState('השירותים שלנו');
+  const [professionalismTitle, setProfessionalismTitle] = useState('מקצוענות היא העיקר');
+  const [educationTitle, setEducationTitle] = useState('השכלה');
+
   // Company Info
   const [companyName, setCompanyName] = useState('');
   const [companyFounder, setCompanyFounder] = useState('');
@@ -69,6 +78,21 @@ export default function AboutManager() {
   ];
 
   useEffect(() => {
+    const pageTitleData = aboutContent.find(c => c.section === 'page-title');
+    setPageTitle(pageTitleData?.content || '');
+
+    const fieldsTitleData = aboutContent.find(c => c.section === 'fields-title');
+    setFieldsTitle(fieldsTitleData?.content || 'תחומי עיסוק');
+
+    const servicesTitleData = aboutContent.find(c => c.section === 'services-title');
+    setServicesTitle(servicesTitleData?.content || 'השירותים שלנו');
+
+    const profTitleData = aboutContent.find(c => c.section === 'professionalism-title');
+    setProfessionalismTitle(profTitleData?.content || 'מקצוענות היא העיקר');
+
+    const eduTitleData = aboutContent.find(c => c.section === 'education-title');
+    setEducationTitle(eduTitleData?.content || 'השכלה');
+
     const company = aboutContent.find(c => c.section === 'company');
     if (company?.content) {
       try {
@@ -151,6 +175,25 @@ export default function AboutManager() {
     },
   });
 
+  const saveRawMutation = useMutation({
+    mutationFn: async ({ section, title, content }) => {
+      const existing = aboutContent.find(c => c.section === section);
+      if (existing) {
+        return updateContentBlock(existing.id, { content });
+      } else {
+        return createContentBlock({ page: 'about', section, title, content });
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['contentBlocks', 'about'] });
+      toast.success('נשמר בהצלחה');
+    },
+  });
+
+  const savePageTitle = () => {
+    saveRawMutation.mutate({ section: 'page-title', title: 'כותרת עמוד', content: pageTitle });
+  };
+
   const saveCompany = () => {
     saveMutation.mutate({
       section: 'company',
@@ -172,6 +215,24 @@ export default function AboutManager() {
 
   return (
     <div className="space-y-6">
+      {/* Page Title */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-right">כותרת עמוד אודות</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <RichTextEditor
+            value={pageTitle}
+            onChange={setPageTitle}
+            toolbarOptions="full"
+          />
+          <Button onClick={savePageTitle} disabled={saveRawMutation.isPending} className="bg-[#8c2b60] hover:bg-[#6B1028]">
+            {saveRawMutation.isPending ? <Loader2 className="w-4 h-4 ml-2 animate-spin" /> : <Save className="w-4 h-4 ml-2" />}
+            {saveRawMutation.isPending ? 'שומר...' : 'שמור כותרת'}
+          </Button>
+        </CardContent>
+      </Card>
+
       {/* Company Info */}
       <Card>
         <CardHeader>
@@ -183,40 +244,59 @@ export default function AboutManager() {
         <CardContent className="space-y-4">
           <div>
             <label className="block text-sm font-medium mb-2 text-right">שם החברה</label>
-            <Input
+            <RichTextEditor
               value={companyName}
-              onChange={(e) => setCompanyName(e.target.value)}
-              className="text-right"
+              onChange={setCompanyName}
+              toolbarOptions="full"
             />
           </div>
           <div>
             <label className="block text-sm font-medium mb-2 text-right">מייסד/ת</label>
-            <Input
+            <RichTextEditor
               value={companyFounder}
-              onChange={(e) => setCompanyFounder(e.target.value)}
-              className="text-right"
+              onChange={setCompanyFounder}
+              toolbarOptions="full"
             />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-2 text-right">כותרת תחומי עיסוק</label>
+            <RichTextEditor
+              value={fieldsTitle}
+              onChange={setFieldsTitle}
+              toolbarOptions="full"
+            />
+            <Button
+              onClick={() => saveRawMutation.mutate({ section: 'fields-title', title: 'כותרת תחומי עיסוק', content: fieldsTitle })}
+              disabled={saveRawMutation.isPending}
+              size="sm"
+              className="bg-[#8c2b60] hover:bg-[#6B1028] mt-2"
+            >
+              <Save className="w-4 h-4 ml-2" />
+              שמור כותרת
+            </Button>
           </div>
           <div>
             <label className="block text-sm font-medium mb-2 text-right">תחומי עיסוק</label>
             {fields.map((field, idx) => (
-              <div key={idx} className="flex gap-2 mb-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setFields(fields.filter((_, i) => i !== idx))}
-                  className="text-red-600"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </Button>
-                <Input
+              <div key={idx} className="mb-4 border rounded-lg p-3">
+                <div className="flex justify-end mb-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setFields(fields.filter((_, i) => i !== idx))}
+                    className="text-red-600"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </div>
+                <RichTextEditor
                   value={field}
-                  onChange={(e) => {
+                  onChange={(value) => {
                     const newFields = [...fields];
-                    newFields[idx] = e.target.value;
+                    newFields[idx] = value;
                     setFields(newFields);
                   }}
-                  className="text-right"
+                  toolbarOptions="full"
                 />
               </div>
             ))}
@@ -246,12 +326,29 @@ export default function AboutManager() {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium mb-2 text-right">כותרת הסקשן</label>
+            <RichTextEditor
+              value={servicesTitle}
+              onChange={setServicesTitle}
+              toolbarOptions="full"
+            />
+            <Button
+              onClick={() => saveRawMutation.mutate({ section: 'services-title', title: 'כותרת שירותים', content: servicesTitle })}
+              disabled={saveRawMutation.isPending}
+              size="sm"
+              className="bg-[#8c2b60] hover:bg-[#6B1028] mt-2"
+            >
+              <Save className="w-4 h-4 ml-2" />
+              שמור כותרת
+            </Button>
+          </div>
           <p className="text-sm text-gray-500 text-right">השתמשו בכפתור הרשימה בעורך כדי ליצור נקודות</p>
           <RichTextEditor
             value={servicesHtml}
             onChange={setServicesHtml}
             height="200px"
-            toolbarOptions="simple"
+            toolbarOptions="full"
           />
           <Button onClick={saveServices} disabled={saveMutation.isPending} className="bg-[#8c2b60] hover:bg-[#6B1028]">
             {saveMutation.isPending ? <Loader2 className="w-4 h-4 ml-2 animate-spin" /> : <Save className="w-4 h-4 ml-2" />}
@@ -269,12 +366,29 @@ export default function AboutManager() {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium mb-2 text-right">כותרת הסקשן</label>
+            <RichTextEditor
+              value={professionalismTitle}
+              onChange={setProfessionalismTitle}
+              toolbarOptions="full"
+            />
+            <Button
+              onClick={() => saveRawMutation.mutate({ section: 'professionalism-title', title: 'כותרת מקצוענות', content: professionalismTitle })}
+              disabled={saveRawMutation.isPending}
+              size="sm"
+              className="bg-[#8c2b60] hover:bg-[#6B1028] mt-2"
+            >
+              <Save className="w-4 h-4 ml-2" />
+              שמור כותרת
+            </Button>
+          </div>
           <p className="text-sm text-gray-500 text-right">השתמשו בכפתור הרשימה בעורך כדי ליצור נקודות</p>
           <RichTextEditor
             value={professionalismHtml}
             onChange={setProfessionalismHtml}
             height="200px"
-            toolbarOptions="simple"
+            toolbarOptions="full"
           />
           <Button onClick={saveProfessionalism} disabled={saveMutation.isPending} className="bg-[#8c2b60] hover:bg-[#6B1028]">
             {saveMutation.isPending ? <Loader2 className="w-4 h-4 ml-2 animate-spin" /> : <Save className="w-4 h-4 ml-2" />}
@@ -292,6 +406,23 @@ export default function AboutManager() {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium mb-2 text-right">כותרת הסקשן</label>
+            <RichTextEditor
+              value={educationTitle}
+              onChange={setEducationTitle}
+              toolbarOptions="full"
+            />
+            <Button
+              onClick={() => saveRawMutation.mutate({ section: 'education-title', title: 'כותרת השכלה', content: educationTitle })}
+              disabled={saveRawMutation.isPending}
+              size="sm"
+              className="bg-[#8c2b60] hover:bg-[#6B1028] mt-2"
+            >
+              <Save className="w-4 h-4 ml-2" />
+              שמור כותרת
+            </Button>
+          </div>
           {education.map((edu, idx) => (
             <Card key={idx} className="bg-gray-50">
               <CardContent className="pt-4 space-y-3">
@@ -307,38 +438,38 @@ export default function AboutManager() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-1 text-right">תואר/הסמכה</label>
-                  <Input
+                  <RichTextEditor
                     value={edu.degree || ''}
-                    onChange={(e) => {
+                    onChange={(value) => {
                       const newEdu = [...education];
-                      newEdu[idx] = { ...newEdu[idx], degree: e.target.value };
+                      newEdu[idx] = { ...newEdu[idx], degree: value };
                       setEducation(newEdu);
                     }}
-                    className="text-right"
+                    toolbarOptions="full"
                   />
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-1 text-right">תחום</label>
-                  <Input
+                  <RichTextEditor
                     value={edu.field || ''}
-                    onChange={(e) => {
+                    onChange={(value) => {
                       const newEdu = [...education];
-                      newEdu[idx] = { ...newEdu[idx], field: e.target.value };
+                      newEdu[idx] = { ...newEdu[idx], field: value };
                       setEducation(newEdu);
                     }}
-                    className="text-right"
+                    toolbarOptions="full"
                   />
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-1 text-right">מוסד</label>
-                  <Input
+                  <RichTextEditor
                     value={edu.institution || ''}
-                    onChange={(e) => {
+                    onChange={(value) => {
                       const newEdu = [...education];
-                      newEdu[idx] = { ...newEdu[idx], institution: e.target.value };
+                      newEdu[idx] = { ...newEdu[idx], institution: value };
                       setEducation(newEdu);
                     }}
-                    className="text-right"
+                    toolbarOptions="full"
                   />
                 </div>
               </CardContent>

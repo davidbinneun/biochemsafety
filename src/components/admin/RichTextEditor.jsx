@@ -2,10 +2,11 @@ import React, { useRef } from 'react';
 import ReactQuill, { Quill } from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import PageLinkButton from './PageLinkButton';
+import { uploadFile } from '@/lib/supabaseClient';
 
 // Register custom font sizes
 const Size = Quill.import('attributors/style/size');
-Size.whitelist = ['12px', '14px', '16px', '18px', '20px', '24px', '28px', '32px', '36px', '48px'];
+Size.whitelist = ['12px', '14px', '16px', '18px', '20px', '24px', '28px', '32px', '36px', '42px', '48px', '54px', '60px', '66px', '72px'];
 Quill.register(Size, true);
 
 // Register font families using inline styles
@@ -68,7 +69,7 @@ export default function RichTextEditor({
           [{ 'color': [] }, { 'background': [] }],
           [{ 'list': 'ordered'}, { 'list': 'bullet' }],
           [{ 'align': [] }],
-          ['link'],
+          ['link', 'image'],
           ['custom-color', 'custom-background'],
           ['clean']
         ];
@@ -84,6 +85,26 @@ export default function RichTextEditor({
         },
         'custom-background': function () {
           openNativeColorPicker(this.quill, 'background');
+        },
+        'image': function () {
+          const input = document.createElement('input');
+          input.setAttribute('type', 'file');
+          input.setAttribute('accept', 'image/*');
+          input.click();
+          input.onchange = async () => {
+            const file = input.files?.[0];
+            if (!file) return;
+            try {
+              const url = await uploadFile(file);
+              const quill = this.quill;
+              const range = quill.getSelection(true);
+              quill.insertEmbed(range.index, 'image', url);
+              quill.setSelection(range.index + 1);
+            } catch (err) {
+              console.error('Image upload failed:', err);
+              alert('שגיאה בהעלאת תמונה');
+            }
+          };
         }
       }
     }
@@ -126,7 +147,7 @@ export default function RichTextEditor({
         <span className="text-xs text-gray-500">הוסף קישור לעמוד באתר</span>
       </div>
       <div
-        className="bg-white rounded-lg border overflow-hidden [&_.ql-editor_ul]:list-disc [&_.ql-editor_ul]:pr-8 [&_.ql-editor_ol]:list-decimal [&_.ql-editor_ol]:pr-8 [&_.ql-editor_li]:pr-2"
+        className="bg-white rounded-lg border overflow-visible [&_.ql-editor_ul]:list-disc [&_.ql-editor_ul]:pr-8 [&_.ql-editor_ol]:list-decimal [&_.ql-editor_ol]:pr-8 [&_.ql-editor_li]:pr-2 [&_.ql-toolbar]:overflow-visible"
         dir="rtl"
       >
         <ReactQuill

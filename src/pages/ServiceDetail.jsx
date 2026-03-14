@@ -53,8 +53,6 @@ export default function ServiceDetail() {
     );
   }
 
-  const benefits = service.benefits?.split('\n').filter(b => b.trim()) || [];
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       {/* Hero Section */}
@@ -76,7 +74,7 @@ export default function ServiceDetail() {
               )}
             </div>
             <div className="text-right">
-              <h1 className="text-4xl md:text-5xl font-bold">{service.title}</h1>
+              <div className="text-4xl md:text-5xl font-bold prose max-w-none prose-invert [&_p]:my-0 [&_*]:!text-white" dangerouslySetInnerHTML={{ __html: service.title }} />
             </div>
           </div>
 
@@ -104,7 +102,7 @@ export default function ServiceDetail() {
 
         {service.full_description && (
           <div className="bg-white rounded-3xl shadow-xl p-8 md:p-12 border border-gray-100 mb-8">
-            <h2 className="text-3xl font-bold text-[#8c2b60] mb-6 text-right">פירוט השירות</h2>
+            <h2 className="text-3xl font-bold text-[#4e1635] mb-6 text-right">פירוט השירות</h2>
             <div 
               className="text-[#4e1635] text-lg leading-relaxed text-right prose prose-lg max-w-none prose-headings:text-[#4e1635] prose-ul:list-disc prose-ul:pr-6 prose-ol:list-decimal prose-ol:pr-6 [&_ul]:list-disc [&_ul]:pr-6 [&_ol]:list-decimal [&_ol]:pr-6 [&_a]:text-[#8c2b60] [&_a]:font-bold [&_a]:no-underline [&_a:hover]:underline [&_*]:!text-[#4e1635]"
               dangerouslySetInnerHTML={{ __html: convertInternalLinks(service.full_description) }}
@@ -112,26 +110,23 @@ export default function ServiceDetail() {
           </div>
         )}
 
-        {benefits.length > 0 && (
+        {service.benefits && service.benefits.replace(/<[^>]*>/g, '').trim() && (
           <div className="bg-white rounded-3xl shadow-xl p-8 md:p-12 border border-gray-100 mb-8">
-            <h2 className="text-3xl font-bold text-[#8c2b60] mb-6 text-right">יתרונות</h2>
-            <div className="space-y-3">
-              {benefits.map((benefit, idx) => (
-                <div key={idx} className="flex items-start gap-3 text-right">
-                  <span className="text-[#8c2b60] text-xl flex-shrink-0">•</span>
-                  <p className="text-[#4e1635] text-lg leading-relaxed">{benefit.replace(/^[•\-]\s*/, '')}</p>
-                </div>
-              ))}
-            </div>
+            <h2 className="text-3xl font-bold text-[#4e1635] mb-6 text-right">יתרונות</h2>
+            <div
+              className="text-[#4e1635] text-lg leading-relaxed text-right prose prose-lg max-w-none prose-headings:text-[#4e1635] [&_ul]:list-disc [&_ul]:pr-6 [&_ol]:list-decimal [&_ol]:pr-6 [&_a]:text-[#8c2b60] [&_a]:font-bold [&_a]:no-underline [&_a:hover]:underline [&_*]:!text-[#4e1635]"
+              dangerouslySetInnerHTML={{ __html: convertInternalLinks(service.benefits) }}
+            />
           </div>
         )}
 
-        {service.process && (
+        {service.process && service.process.replace(/<[^>]*>/g, '').trim() && (
           <div className="bg-white rounded-3xl shadow-xl p-8 md:p-12 border border-gray-100 mb-8">
-            <h2 className="text-3xl font-bold text-[#8c2b60] mb-6 text-right">תהליך העבודה</h2>
-            <div className="text-[#4e1635] text-lg leading-relaxed whitespace-pre-line text-right">
-              {service.process}
-            </div>
+            <h2 className="text-3xl font-bold text-[#4e1635] mb-6 text-right">תהליך העבודה</h2>
+            <div
+              className="text-[#4e1635] text-lg leading-relaxed text-right prose prose-lg max-w-none prose-headings:text-[#4e1635] [&_ul]:list-disc [&_ul]:pr-6 [&_ol]:list-decimal [&_ol]:pr-6 [&_a]:text-[#8c2b60] [&_a]:font-bold [&_a]:no-underline [&_a:hover]:underline [&_*]:!text-[#4e1635]"
+              dangerouslySetInnerHTML={{ __html: convertInternalLinks(service.process) }}
+            />
           </div>
         )}
 

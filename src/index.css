@@ -180,8 +180,18 @@ button:focus-visible {
 .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="32px"]::before { content: '32px'; }
 .ql-snow .ql-picker.ql-size .ql-picker-label[data-value="36px"]::before,
 .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="36px"]::before { content: '36px'; }
+.ql-snow .ql-picker.ql-size .ql-picker-label[data-value="42px"]::before,
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="42px"]::before { content: '42px'; }
 .ql-snow .ql-picker.ql-size .ql-picker-label[data-value="48px"]::before,
 .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="48px"]::before { content: '48px'; }
+.ql-snow .ql-picker.ql-size .ql-picker-label[data-value="54px"]::before,
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="54px"]::before { content: '54px'; }
+.ql-snow .ql-picker.ql-size .ql-picker-label[data-value="60px"]::before,
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="60px"]::before { content: '60px'; }
+.ql-snow .ql-picker.ql-size .ql-picker-label[data-value="66px"]::before,
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="66px"]::before { content: '66px'; }
+.ql-snow .ql-picker.ql-size .ql-picker-label[data-value="72px"]::before,
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="72px"]::before { content: '72px'; }
 
 /* Quill editor font family labels */
 .ql-snow .ql-picker.ql-font .ql-picker-label::before,
@@ -212,3 +222,10 @@ button:focus-visible {
 /* Make font/size dropdowns wider for readability */
 .ql-snow .ql-picker.ql-font { width: 130px; }
 .ql-snow .ql-picker.ql-size { width: 80px; }
+
+/* Ensure bullet/number markers always match the text color.
+   Tailwind prose sets ::marker to a gray color by default.
+   Override to inherit from the list item's text color instead. */
+.prose :where(ul, ol) > :where(li)::marker {
+  color: inherit;
+}

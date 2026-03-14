@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Save, X, Upload, Trash2 } from 'lucide-react';
 import { uploadFile } from '@/lib/supabaseClient';
@@ -72,11 +72,10 @@ export default function ServiceEditor({ service, onSave, onCancel, onDelete }) {
           <div className="grid md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium mb-2">שם התחום *</label>
-              <Input
+              <RichTextEditor
                 value={form.title}
-                onChange={(e) => setForm({...form, title: e.target.value})}
-                placeholder="למשל: בטיחות כימית"
-                className="text-right"
+                onChange={(value) => setForm({...form, title: value})}
+                toolbarOptions="full"
               />
             </div>
             <div>
@@ -97,7 +96,7 @@ export default function ServiceEditor({ service, onSave, onCancel, onDelete }) {
               value={form.short_description || ''}
               onChange={(value) => setForm({...form, short_description: value})}
               height="150px"
-              toolbarOptions="minimal"
+              toolbarOptions="full"
             />
           </div>
 
@@ -112,23 +111,22 @@ export default function ServiceEditor({ service, onSave, onCancel, onDelete }) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">יתרונות (כל יתרון בשורה נפרדת)</label>
-            <Textarea
-              value={form.benefits}
-              onChange={(e) => setForm({...form, benefits: e.target.value})}
-              rows={4}
-              className="text-right"
-              placeholder="יתרון ראשון&#10;יתרון שני&#10;יתרון שלישי"
+            <label className="block text-sm font-medium mb-2">יתרונות</label>
+            <RichTextEditor
+              value={form.benefits || ''}
+              onChange={(value) => setForm({...form, benefits: value})}
+              height="200px"
+              toolbarOptions="full"
             />
           </div>
 
           <div>
             <label className="block text-sm font-medium mb-2">תהליך העבודה</label>
-            <Textarea
-              value={form.process}
-              onChange={(e) => setForm({...form, process: e.target.value})}
-              rows={4}
-              className="text-right"
+            <RichTextEditor
+              value={form.process || ''}
+              onChange={(value) => setForm({...form, process: value})}
+              height="200px"
+              toolbarOptions="full"
             />
           </div>
 

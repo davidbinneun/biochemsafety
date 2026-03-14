@@ -159,6 +159,7 @@ export default function Admin() {
   const pageNames = {
     home: 'דף הבית',
     about: 'אודות',
+    'services-page': 'עמוד תחומי התמחות',
     contact: 'יצירת קשר',
     layout: 'כותרת ותחתית'
   };
@@ -225,6 +226,7 @@ export default function Admin() {
             <TabsTrigger value="contact-info">פרטי קשר</TabsTrigger>
             <TabsTrigger value="home">דף הבית</TabsTrigger>
             <TabsTrigger value="about">אודות</TabsTrigger>
+            <TabsTrigger value="services-page">עמוד תחומי התמחות</TabsTrigger>
             <TabsTrigger value="contact">יצירת קשר</TabsTrigger>
             <TabsTrigger value="layout">כותרת ותחתית</TabsTrigger>
           </TabsList>
